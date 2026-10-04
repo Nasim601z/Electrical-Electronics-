@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 /*
 ==================================================
@@ -3684,6 +3685,26 @@ function ModuleHost({ onBack, children }) {
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState("home");
+  const [screenHistory, setScreenHistory] = useState([]);
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [notifications, setNotifications] = useState(false);
+
+
+// Back Button Handler
+useEffect(() => {
+  const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+    if (currentScreen !== "home") {
+      const previous = screenHistory[screenHistory.length - 1] || "home";
+      setScreenHistory((items) => items.slice(0, -1));
+      setCurrentScreen(previous);
+      return true;
+    }
+    Alert.alert("App থেকে বের হবেন?", "আপনি কি সত্যিই অ্যাপ থেকে বের হতে চান?", [{ text: "না", style: "cancel" }, { text: "হ্যাঁ, বের হবো", style: "destructive", onPress: () => BackHandler.exitApp() }]);
+    return true;
+  });
+  return () => sub.remove();
+}, [currentScreen, screenHistory]);  
 
   if (currentScreen === "home") {
     return (
@@ -3704,11 +3725,25 @@ export default function App() {
     );
   }
 
+  let page;
+  if (currentScreen === "home") {
+    page = <HomeScreen onOpenSection={setCurrentScreen} onSettings={() => setSettingsVisible(true)} />;
+  } else {
+    const entry = SECTION_MODULES[currentScreen];
+    const ModuleComponent = entry && entry.Component;
+    if (entry) {
+      page = <ModuleHost onBack={() => setCurrentScreen("home")}><ModuleComponent key={currentScreen} {...(entry.props || {})} /></ModuleHost>;
+    } else {
+      page = <SectionScreen sectionId={currentScreen} onBack={() => setCurrentScreen("home")} />;
+    }
+  }
+
   return (
-    <SectionScreen
-      sectionId={currentScreen}
-      onBack={() => setCurrentScreen("home")}
-    />
+    <SafeAreaView style={{ flex: 1, backgroundColor: fullscreen ? "#0F172A" : "#FFFFFF" }} edges={["top"]}>
+      <StatusBar barStyle={fullscreen ? "light-content" : "dark-content"} hidden={fullscreen} backgroundColor={fullscreen ? "#0F172A" : "#FFFFFF"} />
+      <SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} fullscreen={fullscreen} setFullscreen={setFullscreen} notifications={notifications} toggleNotifications={toggleNotifications} />
+      {page}
+    </SafeAreaView>
   );
 }
 
