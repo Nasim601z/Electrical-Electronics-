@@ -13,6 +13,7 @@ TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import CalculatorScreen from "./CalculatorScreen";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -3811,6 +3812,23 @@ function HomeScreen({ onOpenSection }) {
         শেখার জন্য একটি বিষয় নির্বাচন করুন
       </Text>
 
+      {/* CALCULATOR CARD START */}
+      <TouchableOpacity
+        style={styles.calcCard}
+        onPress={() => onOpenSection("calculator")}
+        activeOpacity={0.85}
+      >
+        <View style={styles.calcIconBox}>
+          <MaterialCommunityIcons name="calculator-variant" size={28} color="#FFFFFF" />
+        </View>
+        <View style={styles.calcTextBox}>
+          <Text style={styles.calcTitle}>Calculator</Text>
+          <Text style={styles.calcSubtitle}>Ohm's Law, Power সহ দ্রুত হিসাব</Text>
+        </View>
+        <MaterialCommunityIcons name="arrow-right" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
+      {/* CALCULATOR CARD END */}
+
       {/* VIVA FEATURED CARD START */}
       <TouchableOpacity
         style={styles.vivaCard}
@@ -4600,6 +4618,11 @@ const styles = StyleSheet.create({
     marginLeft: 9,
   },
 
+  calcCard: { backgroundColor: "#16A34A", borderRadius: 14, padding: 13, flexDirection: "row", alignItems: "center", marginBottom: 14 },
+  calcIconBox: { width: 44, height: 44, borderRadius: 12, backgroundColor: "#22C55E", alignItems: "center", justifyContent: "center", marginRight: 10 },
+  calcTextBox: { flex: 1 },
+  calcTitle: { color: "#FFFFFF", fontSize: 16, fontWeight: "bold" },
+  calcSubtitle: { color: "#DCFCE7", fontSize: 11, marginTop: 2 },
   sectionHeading: {
     color: "#0F172A",
     fontSize: 20,
