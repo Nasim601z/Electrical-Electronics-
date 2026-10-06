@@ -1518,7 +1518,7 @@ const CalculationModule = (() => {
 
     if (calculator) return <CalculatorHub onBack={() => setCalculator(false)} />;
     if (page === "detail" && topic) return <TopicDetail topic={topic} onBack={() => { setTopic(null); setPage("topics"); }} />;
-    if (page === "topics") return <CalculationTopics group={group} setGroup={setGroup} search={search} setSearch={setSearch} topics={filtered} onBack={() => setPage("home")} onOpen={(item) => { setTopic(item); setPage("detail"); }} />;
+    if (page === "topics") return <CalculationTopics group={group} setGroup={setGroup} search={search} setSearch={setSearch} topics={filtered} onBack={() => setPage("home")} onOpen={(item) => { setTopic(item); setPage("detail"); }} onCalculator={() => setCalculator(true)} />;
     return <Home onOpen={() => setPage("topics")} onCalculator={() => setCalculator(true)} />;
   }
 
@@ -1582,9 +1582,15 @@ const CalculationModule = (() => {
     return <ScrollView style={styles.container} contentContainerStyle={styles.content}><Header title="Real Calculator Tools" icon="calculator" color="#2563EB" onBack={onBack} /><Text style={styles.muted}>প্রতিটি input-এর unit দেখে মান দিন। ফলাফল practical estimate; final electrical design নয়।</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.groupScroll}>{CALCULATOR_OPTIONS.map((x) => <TouchableOpacity key={x.id} onPress={() => { setType(x.id); setValues({}); }} style={[styles.groupChip, type === x.id && { backgroundColor: "#2563EB", borderColor: "#2563EB" }]}><MaterialCommunityIcons name={x.icon} size={17} color={type === x.id ? "#FFFFFF" : "#2563EB"} /><Text style={[styles.chipText, type === x.id && { color: "#FFFFFF" }]}>{x.title}</Text></TouchableOpacity>)}</ScrollView><View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: "#DBEAFE" }}><Text style={styles.heading}>{selected.title}</Text>{selected.fields.map(([key, label, unit]) => <View key={key} style={{ marginTop: 11 }}><Text style={{ color: "#334155", fontSize: 12, fontWeight: "bold", marginBottom: 5 }}>{label} ({unit})</Text><TextInput value={values[key] || ""} onChangeText={(text) => setValues((old) => ({ ...old, [key]: text }))} keyboardType="decimal-pad" placeholder={`মান লিখুন: ${unit}`} placeholderTextColor="#94A3B8" style={{ height: 46, borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 10, paddingHorizontal: 12, color: "#0F172A" }} /></View>)}<View style={{ backgroundColor: "#EFF6FF", borderRadius: 12, padding: 14, marginTop: 16 }}><Text style={{ color: "#1D4ED8", fontSize: 12, fontWeight: "bold" }}>ফলাফল</Text><Text style={{ color: "#0F172A", fontSize: 18, fontWeight: "bold", marginTop: 7 }}>{calculate()}</Text></View></View><View style={styles.info}><MaterialCommunityIcons name="shield-alert-outline" size={23} color="#C2410C" /><Text style={styles.infoText}>Mains, motor, cable size বা protection নির্বাচন করার আগে qualified electrician ও local code অনুসরণ করুন।</Text></View></ScrollView>;
   }
 
-  function CalculationTopics({ group, setGroup, search, setSearch, topics, onBack, onOpen }) {
+  function CalculationTopics({ group, setGroup, search, setSearch, topics, onBack, onOpen, onCalculator }) {
     return <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Header title="Calculation" icon="calculator-variant" color="#16A34A" onBack={onBack} />
+    <TouchableOpacity style={[styles.startCard, { backgroundColor: "#2563EB", marginBottom: 12 }]} onPress={onCalculator} activeOpacity={0.85}>
+      <View style={[styles.startIcon, { backgroundColor: "#3B82F6" }]}><MaterialCommunityIcons name="calculator" size={28} color="#FFFFFF" /></View>
+      <View style={{ flex: 1 }}><Text style={styles.startTitle}>Real Calculator Tools</Text><Text style={styles.startText}>Ohm, Power, Bill, LED, Battery, Motor</Text></View>
+      <MaterialCommunityIcons name="arrow-right" size={22} color="#FFFFFF" />
+    </TouchableOpacity>
+
       <View style={styles.search}><MaterialCommunityIcons name="magnify" size={21} color="#64748B" /><TextInput value={search} onChangeText={setSearch} placeholder="Calculation খুঁজুন..." placeholderTextColor="#94A3B8" style={styles.input} /></View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.groupScroll}>
         {GROUPS.map((item) => <TouchableOpacity key={item.id} onPress={() => setGroup(item.id)} style={[styles.groupChip, group === item.id && { backgroundColor: item.color, borderColor: item.color }]}><MaterialCommunityIcons name={item.icon} size={17} color={group === item.id ? "#FFFFFF" : item.color} /><Text style={[styles.chipText, group === item.id && { color: "#FFFFFF" }]}>{item.title}</Text></TouchableOpacity>)}
