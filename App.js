@@ -1,19 +1,21 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
+  BackHandler,
+  Modal,
+  Switch,
   Animated,
   Easing,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
-BackHandler,
-Alert,  
-TextInput,
+  TextInput,
   TouchableOpacity,
   View,
+  StatusBar,
 } from "react-native";
-import CalculatorScreen from "./CalculatorScreen";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -99,11 +101,47 @@ const SECTION_REGISTRY = [
   {
     id: "job",
     title: "Job Preparation",
-    subtitle: "CV, interview ও practical test",
+    subtitle: "CV, technical ও practical test",
     description:
       "CV, interview প্রশ্ন, technical Q&A ও practical test-এর প্রস্তুতি নিন।",
     icon: "briefcase-account",
     color: "#BE123C",
+  },
+
+  {
+    id: "tools",
+    title: "Tools Library",
+    subtitle: "ছবি, ব্যবহার ও safety",
+    description: "Electrical ও Electronics-এর প্রয়োজনীয় tools category অনুযায়ী শিখুন।",
+    icon: "toolbox-outline",
+    color: "#0F766E",
+  },
+
+  {
+    id: "acronyms",
+    title: "Acronyms & Full Forms",
+    subtitle: "NO মানে Normally Open",
+    description: "Electrical ও Electronics-এর সংক্ষিপ্ত রূপের পূর্ণরূপ, অর্থ ও ব্যবহার শিখুন।",
+    icon: "format-letter-case",
+    color: "#4338CA",
+  },
+
+  {
+    id: "visuals",
+    title: "Visual Guides",
+    subtitle: "Wiring ও circuit diagram",
+    description: "DOL, Star-Delta, PLC I/O, meter testing ও circuit diagram ধাপে ধাপে বুঝুন।",
+    icon: "vector-polyline",
+    color: "#0E7490",
+  },
+
+  {
+    id: "about",
+    title: "About, Privacy & Data",
+    subtitle: "App information ও data control",
+    description: "App-এর উদ্দেশ্য, safety disclaimer, privacy এবং saved data reset করুন।",
+    icon: "information-outline",
+    color: "#475569",
   },
 
 ];
@@ -616,6 +654,7 @@ const ElectricalModule = (() => {
     const [group, setGroup] = useState("all");
     const [search, setSearch] = useState("");
     const [topic, setTopic] = useState(null);
+    const [calculator, setCalculator] = useState(false);
 
     const filtered = useMemo(() => {
       const q = search.trim().toLowerCase();
@@ -680,7 +719,7 @@ const ElectricalModule = (() => {
         <Card title="Formula / মূল ধারণা" icon="function-variant" color="#16A34A" green><Text style={styles.formula}>{topic.formula}</Text></Card>
         <Card title="উদাহরণ" icon="lightbulb-on-outline" color="#A16207" yellow><Text style={styles.body}>{topic.example}</Text></Card>
         <Card title="কীভাবে পরীক্ষা বা মাপবেন" icon="gauge" color="#0891B2" blue><Text style={styles.body}>{topic.test}</Text></Card>
-        <Card title="Viva প্রশ্ন" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>
+        <Card title="Quick Check" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>
         <Card title="Safety Note" icon="shield-alert-outline" color="#C2410C" orange><Text style={styles.body}>{topic.safety}</Text></Card>
         <TouchableOpacity style={styles.backButtonLarge} onPress={onBack}><MaterialCommunityIcons name="arrow-left" size={20} color="#FFFFFF" /><Text style={styles.backLargeText}>Topic List-এ ফিরে যান</Text></TouchableOpacity>
       </ScrollView>
@@ -699,24 +738,24 @@ const ElectricalModule = (() => {
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#F8FAFC" },
     content: { padding: 16, paddingBottom: 35 },
-    hero: { backgroundColor: "#0F172A", borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
-    heroIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#1E293B", alignItems: "center", justifyContent: "center", marginBottom: 8 },
+    hero: { backgroundColor: "#0F172A", borderRadius: 22, padding: 23, marginBottom: 20 },
+    heroIcon: { width: 62, height: 62, borderRadius: 31, backgroundColor: "#1E293B", alignItems: "center", justifyContent: "center", marginBottom: 17 },
     kicker: { color: "#94A3B8", fontSize: 11, fontWeight: "bold", letterSpacing: 1 },
-    heroTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginTop: 3 },
-    heroText: { color: "#CBD5E1", fontSize: 12, lineHeight: 18, marginTop: 6 },
+    heroTitle: { color: "#FFFFFF", fontSize: 28, fontWeight: "bold", marginTop: 5 },
+    heroText: { color: "#CBD5E1", fontSize: 14, lineHeight: 21, marginTop: 10 },
     heading: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 6, marginBottom: 6 },
     muted: { color: "#64748B", fontSize: 14, lineHeight: 21, marginBottom: 16 },
-    startCard: { backgroundColor: "#0284C7", borderRadius: 17, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 11 },
-    startIcon: { width: 42, height: 42, borderRadius: 12, backgroundColor: "#0EA5E9", alignItems: "center", justifyContent: "center", marginRight: 13 },
-    startTitle: { color: "#FFFFFF", fontSize: 15, fontWeight: "bold" },
-    startText: { color: "#E0F2FE", fontSize: 11, marginTop: 2 },
+    startCard: { backgroundColor: "#0284C7", borderRadius: 17, padding: 17, flexDirection: "row", alignItems: "center", marginBottom: 17 },
+    startIcon: { width: 52, height: 52, borderRadius: 14, backgroundColor: "#0EA5E9", alignItems: "center", justifyContent: "center", marginRight: 13 },
+    startTitle: { color: "#FFFFFF", fontSize: 17, fontWeight: "bold" },
+    startText: { color: "#E0F2FE", fontSize: 12, marginTop: 4 },
     info: { backgroundColor: "#E0F2FE", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "flex-start" },
     infoText: { color: "#0C4A6E", flex: 1, fontSize: 13, lineHeight: 20, marginLeft: 9 },
-    header: { borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
+    header: { borderRadius: 20, padding: 20, marginBottom: 17 },
     back: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
     backText: { color: "#FFFFFF", fontSize: 14, fontWeight: "bold", marginLeft: 7 },
     headerRow: { flexDirection: "row", alignItems: "center" },
-    headerTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginLeft: 9, flex: 1 },
+    headerTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold", marginLeft: 11, flex: 1 },
     search: { height: 50, backgroundColor: "#FFFFFF", borderRadius: 13, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 12 },
     input: { flex: 1, color: "#1E293B", fontSize: 15, marginLeft: 8 },
     groupScroll: { marginBottom: 14 },
@@ -1036,7 +1075,7 @@ const ElectronicsModule = (() => {
     return <Home onOpen={() => setPage("topics")} />;
   }
 
-  function Home({ onOpen }) {
+  function Home({ onOpen, onCalculator }) {
     return <ScrollView style={styles.container} contentContainerStyle={styles.content}><NavRow light={false} />
       <View style={styles.hero}>
         <View style={styles.heroIcon}><MaterialCommunityIcons name="chip" size={36} color="#C4B5FD" /></View>
@@ -1076,7 +1115,7 @@ const ElectronicsModule = (() => {
       <Card title="Formula / মূল ধারণা" icon="function-variant" color="#16A34A" green><Text style={styles.formula}>{topic.formula}</Text></Card>
       <Card title="উদাহরণ" icon="lightbulb-on-outline" color="#A16207" yellow><Text style={styles.body}>{topic.example}</Text></Card>
       <Card title="কীভাবে পরীক্ষা করবেন" icon="gauge" color="#0891B2" blue><Text style={styles.body}>{topic.test}</Text></Card>
-      <Card title="Viva প্রশ্ন" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>
+      <Card title="Quick Check" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>
       <Card title="Safety Note" icon="shield-alert-outline" color="#C2410C" orange><Text style={styles.body}>{topic.safety}</Text></Card>
       <TouchableOpacity style={styles.backButtonLarge} onPress={onBack}><MaterialCommunityIcons name="arrow-left" size={20} color="#FFFFFF" /><Text style={styles.backLargeText}>Topic List-এ ফিরে যান</Text></TouchableOpacity>
     </ScrollView>;
@@ -1094,24 +1133,24 @@ const ElectronicsModule = (() => {
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#FAF8FF" },
     content: { padding: 16, paddingBottom: 35 },
-    hero: { backgroundColor: "#241044", borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
-    heroIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#3B1D68", alignItems: "center", justifyContent: "center", marginBottom: 8 },
+    hero: { backgroundColor: "#241044", borderRadius: 22, padding: 23, marginBottom: 20 },
+    heroIcon: { width: 62, height: 62, borderRadius: 31, backgroundColor: "#3B1D68", alignItems: "center", justifyContent: "center", marginBottom: 17 },
     kicker: { color: "#C4B5FD", fontSize: 11, fontWeight: "bold", letterSpacing: 1 },
-    heroTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginTop: 3 },
-    heroText: { color: "#E9D5FF", fontSize: 12, lineHeight: 18, marginTop: 6 },
+    heroTitle: { color: "#FFFFFF", fontSize: 28, fontWeight: "bold", marginTop: 5 },
+    heroText: { color: "#E9D5FF", fontSize: 14, lineHeight: 21, marginTop: 10 },
     heading: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 6, marginBottom: 6 },
     muted: { color: "#64748B", fontSize: 14, lineHeight: 21, marginBottom: 16 },
-    startCard: { backgroundColor: "#7C3AED", borderRadius: 17, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 11 },
-    startIcon: { width: 42, height: 42, borderRadius: 12, backgroundColor: "#8B5CF6", alignItems: "center", justifyContent: "center", marginRight: 13 },
-    startTitle: { color: "#FFFFFF", fontSize: 15, fontWeight: "bold" },
-    startText: { color: "#EDE9FE", fontSize: 11, marginTop: 2 },
+    startCard: { backgroundColor: "#7C3AED", borderRadius: 17, padding: 17, flexDirection: "row", alignItems: "center", marginBottom: 17 },
+    startIcon: { width: 52, height: 52, borderRadius: 14, backgroundColor: "#8B5CF6", alignItems: "center", justifyContent: "center", marginRight: 13 },
+    startTitle: { color: "#FFFFFF", fontSize: 17, fontWeight: "bold" },
+    startText: { color: "#EDE9FE", fontSize: 12, marginTop: 4 },
     info: { backgroundColor: "#F3E8FF", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "flex-start" },
     infoText: { color: "#581C87", flex: 1, fontSize: 13, lineHeight: 20, marginLeft: 9 },
-    header: { borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
+    header: { borderRadius: 20, padding: 20, marginBottom: 17 },
     back: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
     backText: { color: "#FFFFFF", fontSize: 14, fontWeight: "bold", marginLeft: 7 },
     headerRow: { flexDirection: "row", alignItems: "center" },
-    headerTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginLeft: 9, flex: 1 },
+    headerTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold", marginLeft: 11, flex: 1 },
     search: { height: 50, backgroundColor: "#FFFFFF", borderRadius: 13, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 12 },
     input: { flex: 1, color: "#1E293B", fontSize: 15, marginLeft: 8 },
     groupScroll: { marginBottom: 14 },
@@ -1486,9 +1525,10 @@ const CalculationModule = (() => {
       });
     }, [group, search]);
 
+    if (calculator) return <CalculatorHub onBack={() => setCalculator(false)} />;
     if (page === "detail" && topic) return <TopicDetail topic={topic} onBack={() => { setTopic(null); setPage("topics"); }} />;
     if (page === "topics") return <CalculationTopics group={group} setGroup={setGroup} search={search} setSearch={setSearch} topics={filtered} onBack={() => setPage("home")} onOpen={(item) => { setTopic(item); setPage("detail"); }} />;
-    return <Home onOpen={() => setPage("topics")} />;
+    return <Home onOpen={() => setPage("topics")} onCalculator={() => setCalculator(true)} />;
   }
 
   function Home({ onOpen }) {
@@ -1506,8 +1546,49 @@ const CalculationModule = (() => {
         <View style={{ flex: 1 }}><Text style={styles.startTitle}>Calculation শুরু করুন</Text><Text style={styles.startText}>{CALCULATION_TOPICS.length}টি detailed calculation guide</Text></View>
         <MaterialCommunityIcons name="arrow-right" size={25} color="#FFFFFF" />
       </TouchableOpacity>
+      <TouchableOpacity style={[styles.startCard, { backgroundColor: "#2563EB" }]} onPress={onCalculator} activeOpacity={0.85}>
+        <View style={[styles.startIcon, { backgroundColor: "#3B82F6" }]}><MaterialCommunityIcons name="calculator" size={30} color="#FFFFFF" /></View>
+        <View style={{ flex: 1 }}><Text style={styles.startTitle}>Real Calculator Tools</Text><Text style={styles.startText}>Ohm, Power, Bill, LED, Battery ও Motor</Text></View>
+        <MaterialCommunityIcons name="arrow-right" size={25} color="#FFFFFF" />
+      </TouchableOpacity>
       <View style={styles.info}><MaterialCommunityIcons name="information-outline" size={24} color="#166534" /><Text style={styles.infoText}>Calculation result design বা live electrical work-এর final approval নয়। Cable, protection ও mains work-এর জন্য local code ও qualified electrician অনুসরণ করুন।</Text></View>
     </ScrollView>;
+  }
+
+  const CALCULATOR_OPTIONS = [
+    { id: "ohm", title: "Ohm’s Law", icon: "omega", fields: [["v", "Voltage", "V"], ["i", "Current", "A"], ["r", "Resistance", "Ω"]] },
+    { id: "power", title: "Power", icon: "flash-outline", fields: [["v", "Voltage", "V"], ["i", "Current", "A"], ["pf", "Power Factor", "0–1"]] },
+    { id: "bill", title: "Energy Bill", icon: "cash", fields: [["w", "Load Power", "W"], ["h", "Hours/day", "h"], ["d", "Days/month", "days"], ["rate", "Rate/unit", "৳"]] },
+    { id: "series", title: "Series Resistor", icon: "transit-connection-variant", fields: [["r1", "R1", "Ω"], ["r2", "R2", "Ω"], ["r3", "R3 (optional)", "Ω"]] },
+    { id: "parallel", title: "Parallel Resistor", icon: "source-branch", fields: [["r1", "R1", "Ω"], ["r2", "R2", "Ω"], ["r3", "R3 (optional)", "Ω"]] },
+    { id: "led", title: "LED Resistor", icon: "led-on", fields: [["vs", "Supply Voltage", "V"], ["vf", "LED Forward Voltage", "V"], ["ma", "Desired Current", "mA"]] },
+    { id: "motor", title: "Motor Current", icon: "engine-outline", fields: [["p", "Motor Power", "W"], ["v", "Voltage", "V"], ["pf", "Power Factor", "0–1"], ["eff", "Efficiency", "%"]] },
+    { id: "battery", title: "Battery Backup", icon: "battery-clock-outline", fields: [["v", "Battery Voltage", "V"], ["ah", "Battery Capacity", "Ah"], ["load", "Load Power", "W"], ["eff", "Efficiency", "%"]] },
+  ];
+
+  function CalculatorHub({ onBack }) {
+    const [type, setType] = useState("ohm");
+    const [values, setValues] = useState({});
+    const selected = CALCULATOR_OPTIONS.find((x) => x.id === type);
+    const n = (key) => Number(values[key]) || 0;
+    function calculate() {
+      const v = n("v"), i = n("i"), r = n("r");
+      if (type === "ohm") {
+        if (v && i) return `Resistance = ${(v / i).toFixed(3)} Ω`;
+        if (v && r) return `Current = ${(v / r).toFixed(3)} A`;
+        if (i && r) return `Voltage = ${(i * r).toFixed(3)} V`;
+        return "যেকোনো দুটি মান দিন।";
+      }
+      if (type === "power") return v && i ? `Real Power ≈ ${(v * i * (n("pf") || 1)).toFixed(2)} W` : "Voltage ও Current দিন।";
+      if (type === "bill") { const unit = n("w") / 1000 * n("h") * n("d"); return unit ? `Monthly Energy = ${unit.toFixed(2)} kWh; Estimate = ৳${(unit * n("rate")).toFixed(2)}` : "Power, time ও rate দিন।"; }
+      if (type === "series") return `Total Resistance = ${(n("r1") + n("r2") + n("r3")).toFixed(2)} Ω`;
+      if (type === "parallel") { const rs = [n("r1"), n("r2"), n("r3")].filter(Boolean); return rs.length > 1 ? `Equivalent Resistance = ${(1 / rs.reduce((sum, x) => sum + 1 / x, 0)).toFixed(2)} Ω` : "কমপক্ষে ২টি resistor দিন।"; }
+      if (type === "led") { const mA = n("ma"); if (!n("vs") || !n("vf") || !mA || n("vs") <= n("vf")) return "Supply, forward voltage ও current সঠিকভাবে দিন।"; const ohm = (n("vs") - n("vf")) / (mA / 1000); return `Minimum R = ${ohm.toFixed(1)} Ω; Power ≈ ${((n("vs") - n("vf")) * (mA / 1000)).toFixed(3)} W`; }
+      if (type === "motor") { if (!n("p") || !v) return "Power ও Voltage দিন।"; const current = n("p") / (v * (n("pf") || 1) * ((n("eff") || 100) / 100)); return `Approx. Current = ${current.toFixed(2)} A`; }
+      if (type === "battery") { if (!n("v") || !n("ah") || !n("load")) return "Battery ও load-এর মান দিন।"; const hours = n("v") * n("ah") * ((n("eff") || 80) / 100) / n("load"); return `Approx. Backup = ${hours.toFixed(2)} hours`; }
+      return "মান দিন।";
+    }
+    return <ScrollView style={styles.container} contentContainerStyle={styles.content}><Header title="Real Calculator Tools" icon="calculator" color="#2563EB" onBack={onBack} /><Text style={styles.muted}>প্রতিটি input-এর unit দেখে মান দিন। ফলাফল practical estimate; final electrical design নয়।</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.groupScroll}>{CALCULATOR_OPTIONS.map((x) => <TouchableOpacity key={x.id} onPress={() => { setType(x.id); setValues({}); }} style={[styles.groupChip, type === x.id && { backgroundColor: "#2563EB", borderColor: "#2563EB" }]}><MaterialCommunityIcons name={x.icon} size={17} color={type === x.id ? "#FFFFFF" : "#2563EB"} /><Text style={[styles.chipText, type === x.id && { color: "#FFFFFF" }]}>{x.title}</Text></TouchableOpacity>)}</ScrollView><View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: "#DBEAFE" }}><Text style={styles.heading}>{selected.title}</Text>{selected.fields.map(([key, label, unit]) => <View key={key} style={{ marginTop: 11 }}><Text style={{ color: "#334155", fontSize: 12, fontWeight: "bold", marginBottom: 5 }}>{label} ({unit})</Text><TextInput value={values[key] || ""} onChangeText={(text) => setValues((old) => ({ ...old, [key]: text }))} keyboardType="decimal-pad" placeholder={`মান লিখুন: ${unit}`} placeholderTextColor="#94A3B8" style={{ height: 46, borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 10, paddingHorizontal: 12, color: "#0F172A" }} /></View>)}<View style={{ backgroundColor: "#EFF6FF", borderRadius: 12, padding: 14, marginTop: 16 }}><Text style={{ color: "#1D4ED8", fontSize: 12, fontWeight: "bold" }}>ফলাফল</Text><Text style={{ color: "#0F172A", fontSize: 18, fontWeight: "bold", marginTop: 7 }}>{calculate()}</Text></View></View><View style={styles.info}><MaterialCommunityIcons name="shield-alert-outline" size={23} color="#C2410C" /><Text style={styles.infoText}>Mains, motor, cable size বা protection নির্বাচন করার আগে qualified electrician ও local code অনুসরণ করুন।</Text></View></ScrollView>;
   }
 
   function CalculationTopics({ group, setGroup, search, setSearch, topics, onBack, onOpen }) {
@@ -1532,7 +1613,7 @@ const CalculationModule = (() => {
       <Card title="কী input লাগবে" icon="form-textbox" color="#0284C7" blue><Text style={styles.body}>{topic.inputs}</Text></Card>
       <Card title="উদাহরণ" icon="lightbulb-on-outline" color="#A16207" yellow><Text style={styles.body}>{topic.example}</Text></Card>
       <Card title="ফলাফল কীভাবে বুঝবেন" icon="chart-line" color="#2563EB" blue><Text style={styles.body}>{topic.result}</Text></Card>
-      <Card title="Viva প্রশ্ন" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>
+      <Card title="Quick Check" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>
       <Card title="Safety Note" icon="shield-alert-outline" color="#C2410C" orange><Text style={styles.body}>{topic.safety}</Text></Card>
       <TouchableOpacity style={styles.backButtonLarge} onPress={onBack}><MaterialCommunityIcons name="arrow-left" size={20} color="#FFFFFF" /><Text style={styles.backLargeText}>Calculation List-এ ফিরে যান</Text></TouchableOpacity>
     </ScrollView>;
@@ -1550,24 +1631,24 @@ const CalculationModule = (() => {
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#F7FCF8" },
     content: { padding: 16, paddingBottom: 35 },
-    hero: { backgroundColor: "#052E16", borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
-    heroIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#14532D", alignItems: "center", justifyContent: "center", marginBottom: 8 },
+    hero: { backgroundColor: "#052E16", borderRadius: 22, padding: 23, marginBottom: 20 },
+    heroIcon: { width: 62, height: 62, borderRadius: 31, backgroundColor: "#14532D", alignItems: "center", justifyContent: "center", marginBottom: 17 },
     kicker: { color: "#86EFAC", fontSize: 11, fontWeight: "bold", letterSpacing: 1 },
-    heroTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginTop: 3 },
-    heroText: { color: "#BBF7D0", fontSize: 12, lineHeight: 18, marginTop: 6 },
+    heroTitle: { color: "#FFFFFF", fontSize: 28, fontWeight: "bold", marginTop: 5 },
+    heroText: { color: "#BBF7D0", fontSize: 14, lineHeight: 21, marginTop: 10 },
     heading: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 6, marginBottom: 6 },
     muted: { color: "#64748B", fontSize: 14, lineHeight: 21, marginBottom: 16 },
-    startCard: { backgroundColor: "#16A34A", borderRadius: 17, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 11 },
-    startIcon: { width: 42, height: 42, borderRadius: 12, backgroundColor: "#22C55E", alignItems: "center", justifyContent: "center", marginRight: 13 },
-    startTitle: { color: "#FFFFFF", fontSize: 15, fontWeight: "bold" },
-    startText: { color: "#DCFCE7", fontSize: 11, marginTop: 2 },
+    startCard: { backgroundColor: "#16A34A", borderRadius: 17, padding: 17, flexDirection: "row", alignItems: "center", marginBottom: 17 },
+    startIcon: { width: 52, height: 52, borderRadius: 14, backgroundColor: "#22C55E", alignItems: "center", justifyContent: "center", marginRight: 13 },
+    startTitle: { color: "#FFFFFF", fontSize: 17, fontWeight: "bold" },
+    startText: { color: "#DCFCE7", fontSize: 12, marginTop: 4 },
     info: { backgroundColor: "#DCFCE7", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "flex-start" },
     infoText: { color: "#166534", flex: 1, fontSize: 13, lineHeight: 20, marginLeft: 9 },
-    header: { borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
+    header: { borderRadius: 20, padding: 20, marginBottom: 17 },
     back: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
     backText: { color: "#FFFFFF", fontSize: 14, fontWeight: "bold", marginLeft: 7 },
     headerRow: { flexDirection: "row", alignItems: "center" },
-    headerTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginLeft: 9, flex: 1 },
+    headerTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold", marginLeft: 11, flex: 1 },
     search: { height: 50, backgroundColor: "#FFFFFF", borderRadius: 13, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 12 },
     input: { flex: 1, color: "#1E293B", fontSize: 15, marginLeft: 8 },
     groupScroll: { marginBottom: 14 },
@@ -1967,7 +2048,7 @@ const SafetyModule = (() => {
       <Card title="নিরাপদে কাজের ধাপ" icon="format-list-numbered" color="#0284C7" blue><Text style={styles.body}>{topic.steps}</Text></Card>
       <Card title="কী বিপদ হতে পারে" icon="alert-octagon" color="#DC2626" red><Text style={styles.body}>{topic.danger}</Text></Card>
       <Card title="জরুরি অবস্থায়" icon="ambulance" color="#B91C1C" red><Text style={styles.body}>{topic.emergency}</Text></Card>
-      <Card title="Viva প্রশ্ন" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>
+      <Card title="Quick Check" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>
       <TouchableOpacity style={styles.backButtonLarge} onPress={onBack}><MaterialCommunityIcons name="arrow-left" size={20} color="#FFFFFF" /><Text style={styles.backLargeText}>Safety List-এ ফিরে যান</Text></TouchableOpacity>
     </ScrollView>;
   }
@@ -1984,24 +2065,24 @@ const SafetyModule = (() => {
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#FFFAF7" },
     content: { padding: 16, paddingBottom: 35 },
-    hero: { backgroundColor: "#431407", borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
-    heroIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#7C2D12", alignItems: "center", justifyContent: "center", marginBottom: 8 },
+    hero: { backgroundColor: "#431407", borderRadius: 22, padding: 23, marginBottom: 20 },
+    heroIcon: { width: 62, height: 62, borderRadius: 31, backgroundColor: "#7C2D12", alignItems: "center", justifyContent: "center", marginBottom: 17 },
     kicker: { color: "#FED7AA", fontSize: 11, fontWeight: "bold", letterSpacing: 1 },
-    heroTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginTop: 3 },
-    heroText: { color: "#FFEDD5", fontSize: 12, lineHeight: 18, marginTop: 6 },
+    heroTitle: { color: "#FFFFFF", fontSize: 28, fontWeight: "bold", marginTop: 5 },
+    heroText: { color: "#FFEDD5", fontSize: 14, lineHeight: 21, marginTop: 10 },
     heading: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 6, marginBottom: 6 },
     muted: { color: "#64748B", fontSize: 14, lineHeight: 21, marginBottom: 16 },
-    startCard: { backgroundColor: "#EA580C", borderRadius: 17, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 11 },
-    startIcon: { width: 42, height: 42, borderRadius: 12, backgroundColor: "#F97316", alignItems: "center", justifyContent: "center", marginRight: 13 },
-    startTitle: { color: "#FFFFFF", fontSize: 15, fontWeight: "bold" },
-    startText: { color: "#FFEDD5", fontSize: 11, marginTop: 2 },
+    startCard: { backgroundColor: "#EA580C", borderRadius: 17, padding: 17, flexDirection: "row", alignItems: "center", marginBottom: 17 },
+    startIcon: { width: 52, height: 52, borderRadius: 14, backgroundColor: "#F97316", alignItems: "center", justifyContent: "center", marginRight: 13 },
+    startTitle: { color: "#FFFFFF", fontSize: 17, fontWeight: "bold" },
+    startText: { color: "#FFEDD5", fontSize: 12, marginTop: 4 },
     info: { backgroundColor: "#FFEDD5", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "flex-start" },
     infoText: { color: "#9A3412", flex: 1, fontSize: 13, lineHeight: 20, marginLeft: 9 },
-    header: { borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
+    header: { borderRadius: 20, padding: 20, marginBottom: 17 },
     back: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
     backText: { color: "#FFFFFF", fontSize: 14, fontWeight: "bold", marginLeft: 7 },
     headerRow: { flexDirection: "row", alignItems: "center" },
-    headerTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginLeft: 9, flex: 1 },
+    headerTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold", marginLeft: 11, flex: 1 },
     search: { height: 50, backgroundColor: "#FFFFFF", borderRadius: 13, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 12 },
     input: { flex: 1, color: "#1E293B", fontSize: 15, marginLeft: 8 },
     groupScroll: { marginBottom: 14 },
@@ -2442,7 +2523,7 @@ const MeasurementModule = (() => {
   }
 
   function TopicDetail({ topic, onBack }) {
-    return <ScrollView style={styles.container} contentContainerStyle={styles.content}><Header title={topic.title} icon={topic.icon} color="#0891B2" onBack={onBack} /><Text style={styles.badge}>{topic.category}</Text><Card title="সহজ ভাষায় জানুন" icon="book-open-variant" color="#0891B2"><Text style={styles.body}>{topic.full}</Text></Card><Card title="ধাপে ধাপে কীভাবে করবেন" icon="format-list-numbered" color="#0284C7" blue><Text style={styles.body}>{topic.steps}</Text></Card><Card title="ভালো result কেমন" icon="check-circle-outline" color="#16A34A" green><Text style={styles.body}>{topic.good}</Text></Card><Card title="Safety Warning" icon="shield-alert-outline" color="#C2410C" orange><Text style={styles.body}>{topic.warning}</Text></Card><Card title="Viva প্রশ্ন" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>{topic.animate && <TouchableOpacity style={styles.animationButton} onPress={() => {}}><MaterialCommunityIcons name="animation-play" size={23} color="#FFFFFF" /><Text style={styles.animationButtonText}>এই topic-এর animation পরের ধাপে যোগ হবে</Text></TouchableOpacity>}<TouchableOpacity style={styles.backButtonLarge} onPress={onBack}><MaterialCommunityIcons name="arrow-left" size={20} color="#FFFFFF" /><Text style={styles.backLargeText}>Testing List-এ ফিরে যান</Text></TouchableOpacity></ScrollView>;
+    return <ScrollView style={styles.container} contentContainerStyle={styles.content}><Header title={topic.title} icon={topic.icon} color="#0891B2" onBack={onBack} /><Text style={styles.badge}>{topic.category}</Text><Card title="সহজ ভাষায় জানুন" icon="book-open-variant" color="#0891B2"><Text style={styles.body}>{topic.full}</Text></Card><Card title="ধাপে ধাপে কীভাবে করবেন" icon="format-list-numbered" color="#0284C7" blue><Text style={styles.body}>{topic.steps}</Text></Card><Card title="ভালো result কেমন" icon="check-circle-outline" color="#16A34A" green><Text style={styles.body}>{topic.good}</Text></Card><Card title="Safety Warning" icon="shield-alert-outline" color="#C2410C" orange><Text style={styles.body}>{topic.warning}</Text></Card><Card title="Quick Check" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card>{topic.animate && <TouchableOpacity style={styles.animationButton} onPress={() => {}}><MaterialCommunityIcons name="animation-play" size={23} color="#FFFFFF" /><Text style={styles.animationButtonText}>এই topic-এর animation পরের ধাপে যোগ হবে</Text></TouchableOpacity>}<TouchableOpacity style={styles.backButtonLarge} onPress={onBack}><MaterialCommunityIcons name="arrow-left" size={20} color="#FFFFFF" /><Text style={styles.backLargeText}>Testing List-এ ফিরে যান</Text></TouchableOpacity></ScrollView>;
   }
 
   function Header({ title, icon, color, onBack }) { return <View style={[styles.header, { backgroundColor: color }]}><NavRow onBack={onBack} /><View style={styles.headerRow}><MaterialCommunityIcons name={icon} size={31} color="#FFFFFF" /><Text style={styles.headerTitle}>{title}</Text></View></View>; }
@@ -2450,9 +2531,9 @@ const MeasurementModule = (() => {
 
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#F5FCFD" }, content: { padding: 16, paddingBottom: 35 },
-    hero: { backgroundColor: "#083344", borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 }, heroIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#155E75", alignItems: "center", justifyContent: "center", marginBottom: 8 }, kicker: { color: "#A5F3FC", fontSize: 11, fontWeight: "bold", letterSpacing: 1 }, heroTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginTop: 3 }, heroText: { color: "#CFFAFE", fontSize: 12, lineHeight: 18, marginTop: 6 },
-    heading: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 6, marginBottom: 6 }, muted: { color: "#64748B", fontSize: 14, lineHeight: 21, marginBottom: 16 }, startCard: { backgroundColor: "#0891B2", borderRadius: 17, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 11 }, startIcon: { width: 42, height: 42, borderRadius: 12, backgroundColor: "#06B6D4", alignItems: "center", justifyContent: "center", marginRight: 13 }, startTitle: { color: "#FFFFFF", fontSize: 15, fontWeight: "bold" }, startText: { color: "#CFFAFE", fontSize: 11, marginTop: 2 }, animationPromo: { backgroundColor: "#CFFAFE", borderRadius: 15, padding: 15, flexDirection: "row", alignItems: "center", marginBottom: 15 }, promoTitle: { color: "#0E7490", fontSize: 16, fontWeight: "bold" }, promoText: { color: "#155E75", fontSize: 12, lineHeight: 18, marginTop: 3 }, info: { backgroundColor: "#FFEDD5", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "flex-start" }, infoText: { color: "#9A3412", flex: 1, fontSize: 13, lineHeight: 20, marginLeft: 9 },
-    header: { borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 }, back: { flexDirection: "row", alignItems: "center", marginBottom: 20 }, backText: { color: "#FFFFFF", fontSize: 14, fontWeight: "bold", marginLeft: 7 }, headerRow: { flexDirection: "row", alignItems: "center" }, headerTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginLeft: 9, flex: 1 }, search: { height: 50, backgroundColor: "#FFFFFF", borderRadius: 13, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 12 }, input: { flex: 1, color: "#1E293B", fontSize: 15, marginLeft: 8 }, groupScroll: { marginBottom: 14 }, groupChip: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 20, paddingVertical: 9, paddingHorizontal: 12, flexDirection: "row", alignItems: "center", marginRight: 8 }, chipText: { color: "#334155", fontSize: 12, marginLeft: 5 }, topicCard: { backgroundColor: "#FFFFFF", borderRadius: 14, padding: 12, marginBottom: 10, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0" }, number: { width: 29, height: 29, borderRadius: 15, backgroundColor: "#0891B2", alignItems: "center", justifyContent: "center", marginRight: 9 }, numberText: { color: "#FFFFFF", fontWeight: "bold", fontSize: 13 }, topicIcon: { width: 38, height: 38, borderRadius: 11, backgroundColor: "#CFFAFE", alignItems: "center", justifyContent: "center", marginRight: 10 }, topicTitle: { color: "#0F172A", fontSize: 15, fontWeight: "bold" }, topicSummary: { color: "#64748B", fontSize: 11, lineHeight: 17, marginTop: 3 }, empty: { color: "#64748B", textAlign: "center", marginTop: 30 }, badge: { alignSelf: "flex-start", color: "#0E7490", backgroundColor: "#CFFAFE", borderRadius: 15, paddingVertical: 6, paddingHorizontal: 11, fontSize: 12, fontWeight: "bold", marginBottom: 12 },
+    hero: { backgroundColor: "#083344", borderRadius: 22, padding: 23, marginBottom: 20 }, heroIcon: { width: 62, height: 62, borderRadius: 31, backgroundColor: "#155E75", alignItems: "center", justifyContent: "center", marginBottom: 17 }, kicker: { color: "#A5F3FC", fontSize: 11, fontWeight: "bold", letterSpacing: 1 }, heroTitle: { color: "#FFFFFF", fontSize: 28, fontWeight: "bold", marginTop: 5 }, heroText: { color: "#CFFAFE", fontSize: 14, lineHeight: 21, marginTop: 10 },
+    heading: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 6, marginBottom: 6 }, muted: { color: "#64748B", fontSize: 14, lineHeight: 21, marginBottom: 16 }, startCard: { backgroundColor: "#0891B2", borderRadius: 17, padding: 17, flexDirection: "row", alignItems: "center", marginBottom: 17 }, startIcon: { width: 52, height: 52, borderRadius: 14, backgroundColor: "#06B6D4", alignItems: "center", justifyContent: "center", marginRight: 13 }, startTitle: { color: "#FFFFFF", fontSize: 17, fontWeight: "bold" }, startText: { color: "#CFFAFE", fontSize: 12, marginTop: 4 }, animationPromo: { backgroundColor: "#CFFAFE", borderRadius: 15, padding: 15, flexDirection: "row", alignItems: "center", marginBottom: 15 }, promoTitle: { color: "#0E7490", fontSize: 16, fontWeight: "bold" }, promoText: { color: "#155E75", fontSize: 12, lineHeight: 18, marginTop: 3 }, info: { backgroundColor: "#FFEDD5", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "flex-start" }, infoText: { color: "#9A3412", flex: 1, fontSize: 13, lineHeight: 20, marginLeft: 9 },
+    header: { borderRadius: 20, padding: 20, marginBottom: 17 }, back: { flexDirection: "row", alignItems: "center", marginBottom: 20 }, backText: { color: "#FFFFFF", fontSize: 14, fontWeight: "bold", marginLeft: 7 }, headerRow: { flexDirection: "row", alignItems: "center" }, headerTitle: { color: "#FFFFFF", fontSize: 24, fontWeight: "bold", marginLeft: 11, flex: 1 }, search: { height: 50, backgroundColor: "#FFFFFF", borderRadius: 13, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 12 }, input: { flex: 1, color: "#1E293B", fontSize: 15, marginLeft: 8 }, groupScroll: { marginBottom: 14 }, groupChip: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 20, paddingVertical: 9, paddingHorizontal: 12, flexDirection: "row", alignItems: "center", marginRight: 8 }, chipText: { color: "#334155", fontSize: 12, marginLeft: 5 }, topicCard: { backgroundColor: "#FFFFFF", borderRadius: 14, padding: 12, marginBottom: 10, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0" }, number: { width: 29, height: 29, borderRadius: 15, backgroundColor: "#0891B2", alignItems: "center", justifyContent: "center", marginRight: 9 }, numberText: { color: "#FFFFFF", fontWeight: "bold", fontSize: 13 }, topicIcon: { width: 38, height: 38, borderRadius: 11, backgroundColor: "#CFFAFE", alignItems: "center", justifyContent: "center", marginRight: 10 }, topicTitle: { color: "#0F172A", fontSize: 15, fontWeight: "bold" }, topicSummary: { color: "#64748B", fontSize: 11, lineHeight: 17, marginTop: 3 }, empty: { color: "#64748B", textAlign: "center", marginTop: 30 }, badge: { alignSelf: "flex-start", color: "#0E7490", backgroundColor: "#CFFAFE", borderRadius: 15, paddingVertical: 6, paddingHorizontal: 11, fontSize: 12, fontWeight: "bold", marginBottom: 12 },
     animationButton: { backgroundColor: "#0891B2", borderRadius: 12, padding: 14, flexDirection: "row", alignItems: "center", marginBottom: 14 }, animationButtonText: { color: "#FFFFFF", fontSize: 14, fontWeight: "bold", flex: 1, marginLeft: 8 }, progressBox: { backgroundColor: "#FFFFFF", borderRadius: 14, padding: 15, marginBottom: 15 }, progressTop: { flexDirection: "row", justifyContent: "space-between", marginBottom: 9 }, progressLabel: { color: "#475569", fontSize: 13, fontWeight: "bold" }, progressBg: { height: 8, backgroundColor: "#E2E8F0", borderRadius: 8, overflow: "hidden" }, progressFill: { height: 8, backgroundColor: "#0891B2", borderRadius: 8 }, demoCard: { backgroundColor: "#CFFAFE", borderRadius: 18, padding: 15, minHeight: 325, marginBottom: 14 }, meter: { backgroundColor: "#334155", width: 155, height: 190, borderRadius: 17, alignSelf: "center", padding: 12 }, meterTop: { alignItems: "center" }, meterLabel: { color: "#CBD5E1", fontSize: 7, fontWeight: "bold", marginTop: 3 }, display: { backgroundColor: "#BAE6FD", borderRadius: 5, padding: 9, marginTop: 10, alignItems: "center" }, displayText: { color: "#075985", fontSize: 17, fontWeight: "bold" }, dial: { alignItems: "center", marginTop: 10 }, dialText: { color: "#FACC15", fontSize: 18, fontWeight: "bold" }, ports: { flexDirection: "row", justifyContent: "space-around", marginTop: 8 }, portBlack: { width: 14, height: 14, backgroundColor: "#020617", borderRadius: 7 }, portRed: { width: 14, height: 14, backgroundColor: "#EF4444", borderRadius: 7 }, probeArea: { height: 105, flexDirection: "row", justifyContent: "center", alignItems: "flex-end", marginTop: -3 }, probe: { position: "absolute", bottom: 28, alignItems: "center" }, redProbe: { left: 55 }, blackProbe: { right: 55 }, redHandle: { width: 13, height: 45, backgroundColor: "#EF4444", borderRadius: 7, transform: [{ rotate: "28deg" }] }, blackHandle: { width: 13, height: 45, backgroundColor: "#111827", borderRadius: 7, transform: [{ rotate: "-28deg" }] }, tip: { width: 5, height: 15, backgroundColor: "#64748B", transform: [{ rotate: "28deg" }], marginTop: -3 }, probeText: { color: "#475569", fontSize: 9, fontWeight: "bold", marginTop: 4 }, resistor: { position: "absolute", bottom: 18, flexDirection: "row", alignItems: "center" }, wire: { width: 28, height: 3, backgroundColor: "#64748B" }, bodyResistor: { width: 72, height: 27, borderRadius: 7, backgroundColor: "#FDE68A", borderWidth: 1, borderColor: "#A16207", flexDirection: "row", justifyContent: "space-around", alignItems: "center" }, bandOne: { width: 6, height: 27, backgroundColor: "#92400E" }, bandTwo: { width: 6, height: 27, backgroundColor: "#DC2626" }, bandThree: { width: 6, height: 27, backgroundColor: "#1D4ED8" }, stepCard: { backgroundColor: "#FFFFFF", borderRadius: 15, padding: 16, flexDirection: "row", alignItems: "center", marginBottom: 12 }, stepCircle: { width: 43, height: 43, borderRadius: 22, backgroundColor: "#0891B2", alignItems: "center", justifyContent: "center", marginRight: 13 }, stepNumber: { color: "#FFFFFF", fontSize: 19, fontWeight: "bold" }, stepTitle: { color: "#0F172A", fontSize: 17, fontWeight: "bold" }, stepText: { color: "#64748B", fontSize: 13, lineHeight: 19, marginTop: 5 }, resultBox: { backgroundColor: "#DCFCE7", borderRadius: 13, padding: 14, flexDirection: "row", alignItems: "center", marginBottom: 15 }, resultText: { color: "#166534", fontSize: 13, fontWeight: "bold", marginLeft: 9, flex: 1 }, navRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 15 }, navButton: { backgroundColor: "#FFFFFF", borderRadius: 10, padding: 13, flexDirection: "row", alignItems: "center" }, disabled: { backgroundColor: "#E2E8F0" }, navText: { color: "#0F172A", fontSize: 13, fontWeight: "bold", marginLeft: 6 }, disabledText: { color: "#94A3B8" }, nextButton: { backgroundColor: "#0369A1", borderRadius: 10, padding: 13, flexDirection: "row", alignItems: "center" }, resetButton: { backgroundColor: "#16A34A", borderRadius: 10, padding: 13, flexDirection: "row", alignItems: "center" }, nextText: { color: "#FFFFFF", fontSize: 13, fontWeight: "bold", marginRight: 6 }, warning: { backgroundColor: "#FFEDD5", borderRadius: 13, padding: 14, flexDirection: "row", alignItems: "center" }, warningText: { color: "#9A3412", fontSize: 12, lineHeight: 18, marginLeft: 9, flex: 1 },
     card: { borderRadius: 15, padding: 16, marginBottom: 12, borderLeftWidth: 5 }, cardTitleRow: { flexDirection: "row", alignItems: "center", marginBottom: 9 }, cardTitle: { fontSize: 16, fontWeight: "bold", marginLeft: 8 }, body: { color: "#334155", fontSize: 14, lineHeight: 22 }, backButtonLarge: { backgroundColor: "#0891B2", borderRadius: 11, padding: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 4 }, backLargeText: { color: "#FFFFFF", fontWeight: "bold", marginLeft: 7 },
   });
@@ -2836,13 +2917,13 @@ const PowerFaultModule = (() => {
   }
 
   function TopicDetail({ topic, onBack }) {
-    return <ScrollView style={styles.container} contentContainerStyle={styles.content}><Header title={topic.title} icon={topic.icon} color="#D97706" onBack={onBack} /><Text style={styles.badge}>{topic.category}</Text><Card title="Deep Explanation" icon="book-open-variant" color="#D97706"><Text style={styles.body}>{topic.full}</Text></Card><Card title="Formula / Flow" icon="function-variant" color="#2563EB" blue><Text style={styles.formula}>{topic.formula}</Text></Card><Card title="কীভাবে Test করবেন" icon="gauge" color="#0891B2" cyan><Text style={styles.body}>{topic.test}</Text></Card><Card title="সম্ভাব্য Fault" icon="alert-octagon" color="#DC2626" red><Text style={styles.body}>{topic.fault}</Text></Card><Card title="করণীয় / Diagnosis Direction" icon="tools" color="#16A34A" green><Text style={styles.body}>{topic.action}</Text></Card><Card title="Viva প্রশ্ন" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card><TouchableOpacity style={styles.backButtonLarge} onPress={onBack}><MaterialCommunityIcons name="arrow-left" size={20} color="#FFFFFF" /><Text style={styles.backLargeText}>Power & Fault List-এ ফিরে যান</Text></TouchableOpacity></ScrollView>;
+    return <ScrollView style={styles.container} contentContainerStyle={styles.content}><Header title={topic.title} icon={topic.icon} color="#D97706" onBack={onBack} /><Text style={styles.badge}>{topic.category}</Text><Card title="Deep Explanation" icon="book-open-variant" color="#D97706"><Text style={styles.body}>{topic.full}</Text></Card><Card title="Formula / Flow" icon="function-variant" color="#2563EB" blue><Text style={styles.formula}>{topic.formula}</Text></Card><Card title="কীভাবে Test করবেন" icon="gauge" color="#0891B2" cyan><Text style={styles.body}>{topic.test}</Text></Card><Card title="সম্ভাব্য Fault" icon="alert-octagon" color="#DC2626" red><Text style={styles.body}>{topic.fault}</Text></Card><Card title="করণীয় / Diagnosis Direction" icon="tools" color="#16A34A" green><Text style={styles.body}>{topic.action}</Text></Card><Card title="Quick Check" icon="help-circle-outline" color="#7C3AED" purple><Text style={styles.body}>{topic.viva}</Text></Card><TouchableOpacity style={styles.backButtonLarge} onPress={onBack}><MaterialCommunityIcons name="arrow-left" size={20} color="#FFFFFF" /><Text style={styles.backLargeText}>Power & Fault List-এ ফিরে যান</Text></TouchableOpacity></ScrollView>;
   }
   function Header({ title, icon, color, onBack }) { return <View style={[styles.header, { backgroundColor: color }]}><NavRow onBack={onBack} /><View style={styles.headerRow}><MaterialCommunityIcons name={icon} size={31} color="#FFFFFF" /><Text style={styles.headerTitle}>{title}</Text></View></View>; }
   function Card({ title, icon, color, children, blue, cyan, red, green, purple }) { const backgroundColor = blue ? "#E0F2FE" : cyan ? "#CFFAFE" : red ? "#FEE2E2" : green ? "#F0FDF4" : purple ? "#F3E8FF" : "#FEF3C7"; return <View style={[styles.card, { backgroundColor, borderLeftColor: color }]}><View style={styles.cardTitleRow}><MaterialCommunityIcons name={icon} size={22} color={color} /><Text style={[styles.cardTitle, { color }]}>{title}</Text></View>{children}</View>; }
 
   const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#FFFCF5" }, content: { padding: 16, paddingBottom: 35 }, hero: { backgroundColor: "#451A03", borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 }, heroIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#78350F", alignItems: "center", justifyContent: "center", marginBottom: 8 }, kicker: { color: "#FED7AA", fontSize: 11, fontWeight: "bold", letterSpacing: 1 }, heroTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginTop: 3 }, heroText: { color: "#FFEDD5", fontSize: 12, lineHeight: 18, marginTop: 6 }, heading: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 6, marginBottom: 6 }, muted: { color: "#64748B", fontSize: 14, lineHeight: 21, marginBottom: 16 }, startCard: { backgroundColor: "#D97706", borderRadius: 17, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 11 }, startIcon: { width: 42, height: 42, borderRadius: 12, backgroundColor: "#F59E0B", alignItems: "center", justifyContent: "center", marginRight: 13 }, startTitle: { color: "#FFFFFF", fontSize: 15, fontWeight: "bold" }, startText: { color: "#FEF3C7", fontSize: 11, marginTop: 2 }, flow: { backgroundColor: "#FEF3C7", borderRadius: 15, padding: 15, marginBottom: 15 }, flowTitle: { color: "#92400E", fontWeight: "bold", fontSize: 15, marginBottom: 12 }, flowRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, flowItem: { alignItems: "center", flex: 1 }, flowText: { color: "#92400E", fontSize: 10, fontWeight: "bold", marginTop: 4 }, info: { backgroundColor: "#FFEDD5", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "flex-start" }, infoText: { color: "#9A3412", flex: 1, fontSize: 13, lineHeight: 20, marginLeft: 9 }, header: { borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 }, back: { flexDirection: "row", alignItems: "center", marginBottom: 20 }, backText: { color: "#FFFFFF", fontSize: 14, fontWeight: "bold", marginLeft: 7 }, headerRow: { flexDirection: "row", alignItems: "center" }, headerTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginLeft: 9, flex: 1 }, search: { height: 50, backgroundColor: "#FFFFFF", borderRadius: 13, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 12 }, input: { flex: 1, color: "#1E293B", fontSize: 15, marginLeft: 8 }, groupScroll: { marginBottom: 14 }, groupChip: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 20, paddingVertical: 9, paddingHorizontal: 12, flexDirection: "row", alignItems: "center", marginRight: 8 }, chipText: { color: "#334155", fontSize: 12, marginLeft: 5 }, topicCard: { backgroundColor: "#FFFFFF", borderRadius: 14, padding: 12, marginBottom: 10, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0" }, number: { width: 29, height: 29, borderRadius: 15, backgroundColor: "#D97706", alignItems: "center", justifyContent: "center", marginRight: 9 }, numberText: { color: "#FFFFFF", fontWeight: "bold", fontSize: 13 }, topicIcon: { width: 38, height: 38, borderRadius: 11, backgroundColor: "#FEF3C7", alignItems: "center", justifyContent: "center", marginRight: 10 }, topicTitle: { color: "#0F172A", fontSize: 15, fontWeight: "bold" }, topicSummary: { color: "#64748B", fontSize: 11, lineHeight: 17, marginTop: 3 }, empty: { color: "#64748B", textAlign: "center", marginTop: 30 }, badge: { alignSelf: "flex-start", color: "#92400E", backgroundColor: "#FEF3C7", borderRadius: 15, paddingVertical: 6, paddingHorizontal: 11, fontSize: 12, fontWeight: "bold", marginBottom: 12 }, card: { borderRadius: 15, padding: 16, marginBottom: 12, borderLeftWidth: 5 }, cardTitleRow: { flexDirection: "row", alignItems: "center", marginBottom: 9 }, cardTitle: { fontSize: 16, fontWeight: "bold", marginLeft: 8 }, body: { color: "#334155", fontSize: 14, lineHeight: 22 }, formula: { color: "#1D4ED8", fontSize: 15, lineHeight: 24, fontWeight: "bold" }, backButtonLarge: { backgroundColor: "#D97706", borderRadius: 11, padding: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 4 }, backLargeText: { color: "#FFFFFF", fontWeight: "bold", marginLeft: 7 },
+    container: { flex: 1, backgroundColor: "#FFFCF5" }, content: { padding: 16, paddingBottom: 35 }, hero: { backgroundColor: "#451A03", borderRadius: 22, padding: 23, marginBottom: 20 }, heroIcon: { width: 62, height: 62, borderRadius: 31, backgroundColor: "#78350F", alignItems: "center", justifyContent: "center", marginBottom: 17 }, kicker: { color: "#FED7AA", fontSize: 11, fontWeight: "bold", letterSpacing: 1 }, heroTitle: { color: "#FFFFFF", fontSize: 28, fontWeight: "bold", marginTop: 5 }, heroText: { color: "#FFEDD5", fontSize: 14, lineHeight: 21, marginTop: 10 }, heading: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 6, marginBottom: 6 }, muted: { color: "#64748B", fontSize: 14, lineHeight: 21, marginBottom: 16 }, startCard: { backgroundColor: "#D97706", borderRadius: 17, padding: 17, flexDirection: "row", alignItems: "center", marginBottom: 17 }, startIcon: { width: 52, height: 52, borderRadius: 14, backgroundColor: "#F59E0B", alignItems: "center", justifyContent: "center", marginRight: 13 }, startTitle: { color: "#FFFFFF", fontSize: 17, fontWeight: "bold" }, startText: { color: "#FEF3C7", fontSize: 12, marginTop: 4 }, flow: { backgroundColor: "#FEF3C7", borderRadius: 15, padding: 15, marginBottom: 15 }, flowTitle: { color: "#92400E", fontWeight: "bold", fontSize: 15, marginBottom: 12 }, flowRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" }, flowItem: { alignItems: "center", flex: 1 }, flowText: { color: "#92400E", fontSize: 10, fontWeight: "bold", marginTop: 4 }, info: { backgroundColor: "#FFEDD5", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "flex-start" }, infoText: { color: "#9A3412", flex: 1, fontSize: 13, lineHeight: 20, marginLeft: 9 }, header: { borderRadius: 20, padding: 20, marginBottom: 17 }, back: { flexDirection: "row", alignItems: "center", marginBottom: 20 }, backText: { color: "#FFFFFF", fontSize: 14, fontWeight: "bold", marginLeft: 7 }, headerRow: { flexDirection: "row", alignItems: "center" }, headerTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold", marginLeft: 11, flex: 1 }, search: { height: 50, backgroundColor: "#FFFFFF", borderRadius: 13, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 12 }, input: { flex: 1, color: "#1E293B", fontSize: 15, marginLeft: 8 }, groupScroll: { marginBottom: 14 }, groupChip: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 20, paddingVertical: 9, paddingHorizontal: 12, flexDirection: "row", alignItems: "center", marginRight: 8 }, chipText: { color: "#334155", fontSize: 12, marginLeft: 5 }, topicCard: { backgroundColor: "#FFFFFF", borderRadius: 14, padding: 12, marginBottom: 10, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0" }, number: { width: 29, height: 29, borderRadius: 15, backgroundColor: "#D97706", alignItems: "center", justifyContent: "center", marginRight: 9 }, numberText: { color: "#FFFFFF", fontWeight: "bold", fontSize: 13 }, topicIcon: { width: 38, height: 38, borderRadius: 11, backgroundColor: "#FEF3C7", alignItems: "center", justifyContent: "center", marginRight: 10 }, topicTitle: { color: "#0F172A", fontSize: 15, fontWeight: "bold" }, topicSummary: { color: "#64748B", fontSize: 11, lineHeight: 17, marginTop: 3 }, empty: { color: "#64748B", textAlign: "center", marginTop: 30 }, badge: { alignSelf: "flex-start", color: "#92400E", backgroundColor: "#FEF3C7", borderRadius: 15, paddingVertical: 6, paddingHorizontal: 11, fontSize: 12, fontWeight: "bold", marginBottom: 12 }, card: { borderRadius: 15, padding: 16, marginBottom: 12, borderLeftWidth: 5 }, cardTitleRow: { flexDirection: "row", alignItems: "center", marginBottom: 9 }, cardTitle: { fontSize: 16, fontWeight: "bold", marginLeft: 8 }, body: { color: "#334155", fontSize: 14, lineHeight: 22 }, formula: { color: "#1D4ED8", fontSize: 15, lineHeight: 24, fontWeight: "bold" }, backButtonLarge: { backgroundColor: "#D97706", borderRadius: 11, padding: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 4 }, backLargeText: { color: "#FFFFFF", fontWeight: "bold", marginLeft: 7 },
   });
 
   return App;
@@ -2975,14 +3056,14 @@ const QuizProgressModule = (() => {
 
   function QuizScreen({ onBack, question, index, total, time, selected, answered, score, onAnswer, onNext }) { return <ScrollView style={styles.container} contentContainerStyle={styles.content}><NavRow light={false} onBack={onBack} /><View style={styles.quizTop}><View><Text style={styles.category}>{question.category}</Text><Text style={styles.questionNo}>প্রশ্ন {index + 1}/{total}</Text></View><View style={[styles.timer, time <= 5 && styles.timerDanger]}><MaterialCommunityIcons name="timer-outline" size={18} color={time <= 5 ? "#FFFFFF" : "#7C3AED"} /><Text style={[styles.timerText, time <= 5 && styles.white]}>{answered ? "Done" : `${time}s`}</Text></View></View><View style={styles.progressBg}><View style={[styles.progressFill, { width: `${((index + 1) / total) * 100}%` }]} /></View><Text style={styles.scoreLive}>Current score: {score}</Text><View style={styles.questionCard}><Text style={styles.question}>{question.q}</Text></View>{question.options.map((option, i) => { const correct = i === question.answer; const chosen = i === selected; return <TouchableOpacity key={option} disabled={answered} onPress={() => onAnswer(i)} style={[styles.option, answered && correct && styles.correct, answered && chosen && !correct && styles.wrong]}><View style={styles.optionLetter}><Text style={styles.letter}>{String.fromCharCode(65 + i)}</Text></View><Text style={styles.optionText}>{option}</Text>{answered && correct && <MaterialCommunityIcons name="check-circle" size={21} color="#16A34A" />}</TouchableOpacity>; })}{answered && <View style={styles.explain}><MaterialCommunityIcons name={selected === question.answer ? "check-circle" : "information"} size={22} color={selected === question.answer ? "#16A34A" : "#B45309"} /><Text style={styles.explainText}>{selected === question.answer ? "সঠিক! " : selected === null ? "সময় শেষ। " : "ভুল। "}{question.explain}</Text></View>}{answered && <TouchableOpacity style={styles.next} onPress={onNext}><Text style={styles.nextText}>{index === total - 1 ? "Result Save করুন" : "পরের প্রশ্ন"}</Text><MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" /></TouchableOpacity>}</ScrollView>; }
 
-  function ResultScreen({ result, onProgress, onHome }) { return <ScrollView style={styles.container} contentContainerStyle={styles.content}><NavRow light={false} onBack={onHome} /><View style={styles.resultHero}><MaterialCommunityIcons name={result.accuracy >= 80 ? "trophy" : "medal-outline"} size={57} color="#FFFFFF" /><Text style={styles.resultTitle}>Result Saved!</Text><Text style={styles.resultScore}>{result.score}/{result.total}</Text><Text style={styles.resultAccuracy}>{result.accuracy}% Accuracy</Text></View><View style={styles.saved}><MaterialCommunityIcons name="database-check" size={25} color="#16A34A" /><Text style={styles.savedText}>এই result My Progress-এ save হয়েছে।</Text></View><TouchableOpacity style={styles.progressButton} onPress={onProgress}><MaterialCommunityIcons name="chart-line" size={24} color="#2563EB" /><View style={{ flex: 1 }}><Text style={styles.progressTitle}>My Progress দেখুন</Text><Text style={styles.progressSub}>এই Quiz-এর real score ও accuracy update হয়েছে</Text></View><MaterialCommunityIcons name="arrow-right" size={22} color="#2563EB" /></TouchableOpacity><TouchableOpacity style={styles.homeOutline} onPress={onHome}><Text style={styles.homeText}>Quiz-এর শুরুতে ফিরে যান</Text></TouchableOpacity></ScrollView>; }
+  function ResultScreen({ result, onProgress, onHome }) { return <ScrollView style={styles.container} contentContainerStyle={styles.content}><NavRow light={false} onBack={onHome} /><View style={styles.resultHero}><MaterialCommunityIcons name={result.accuracy >= 80 ? "trophy" : "medal-outline"} size={57} color="#FFFFFF" /><Text style={styles.resultTitle}>Result Saved!</Text><Text style={styles.resultScore}>{result.score}/{result.total}</Text><Text style={styles.resultAccuracy}>{result.accuracy}% Accuracy</Text></View><View style={styles.saved}><MaterialCommunityIcons name="database-check" size={25} color="#16A34A" /><Text style={styles.savedText}>এই result My Progress-এ save হয়েছে।</Text></View>{result.answers && result.answers.some((item) => !item.correct) && <View style={{ backgroundColor: "#FFF7ED", borderRadius: 14, padding: 14, marginBottom: 12 }}><Text style={{ color: "#9A3412", fontSize: 16, fontWeight: "bold", marginBottom: 7 }}>ভুল উত্তর Review</Text>{result.answers.filter((item) => !item.correct).map((item, index) => <Text key={`${item.questionId}-${index}`} style={{ color: "#7C2D12", fontSize: 12, lineHeight: 19 }}>• প্রশ্ন {item.questionId}: আবার এই topic পড়ুন ({item.category})</Text>)}</View>}<TouchableOpacity style={styles.progressButton} onPress={onProgress}><MaterialCommunityIcons name="chart-line" size={24} color="#2563EB" /><View style={{ flex: 1 }}><Text style={styles.progressTitle}>My Progress দেখুন</Text><Text style={styles.progressSub}>এই Quiz-এর real score ও accuracy update হয়েছে</Text></View><MaterialCommunityIcons name="arrow-right" size={22} color="#2563EB" /></TouchableOpacity><TouchableOpacity style={styles.homeOutline} onPress={onHome}><Text style={styles.homeText}>Quiz-এর শুরুতে ফিরে যান</Text></TouchableOpacity></ScrollView>; }
 
   function ProgressScreen({ progress, onBack, onReset }) { const acc = accuracy(progress); const sectionStats = sectionData(progress); return <ScrollView style={styles.container} contentContainerStyle={styles.content}><NavRow light={false} onBack={onBack} /><View style={styles.progressHeader}><Text style={styles.progressHeaderTitle}>My Progress</Text></View><View style={styles.profile}><View style={styles.avatar}><MaterialCommunityIcons name="account-school-outline" size={32} color="#FFFFFF" /></View><View style={{ flex: 1 }}><Text style={styles.profileTitle}>Your Learning Dashboard</Text><Text style={styles.profileSub}>Quiz-এর real data থেকে update হয়েছে</Text></View><View style={styles.level}><Text style={styles.levelSmall}>LEVEL</Text><Text style={styles.levelBig}>{Math.min(99, Math.floor(progress.quizzes.length / 3) + 1).toString().padStart(2, "0")}</Text></View></View><View style={styles.statGrid}><Stat title="মোট Quiz" value={progress.quizzes.length} icon="help-circle-outline" color="#7C3AED" /><Stat title="Accuracy" value={`${acc}%`} icon="target" color="#16A34A" /><Stat title="Questions" value={progress.totalQuestions} icon="format-list-numbered" color="#0284C7" /><Stat title="Best Streak" value={progress.bestStreak} icon="fire" color="#EA580C" /></View><View style={styles.streak}><MaterialCommunityIcons name="fire" size={29} color="#EA580C" /><View style={{ flex: 1, marginLeft: 10 }}><Text style={styles.streakTitle}>{progress.currentStreak} দিনের current streak</Text><Text style={styles.streakSub}>Best streak: {progress.bestStreak} দিন</Text></View></View><Text style={styles.heading}>Section-wise Real Progress</Text>{sectionStats.map((item) => <View key={item.name} style={styles.section}><View style={[styles.sectionIcon, { backgroundColor: `${item.color}20` }]}><MaterialCommunityIcons name={item.icon} size={22} color={item.color} /></View><View style={{ flex: 1 }}><View style={styles.sectionTop}><Text style={styles.sectionName}>{item.name}</Text><Text style={[styles.sectionScore, { color: item.color }]}>{item.total ? Math.round(item.correct / item.total * 100) : 0}%</Text></View><Text style={styles.sectionSub}>{item.total} questions • {item.correct} correct</Text><View style={styles.progressBg}><View style={[styles.progressFill, { backgroundColor: item.color, width: `${item.total ? (item.correct / item.total) * 100 : 0}%` }]} /></View></View></View>)}<Text style={styles.heading}>Recent Quiz Results</Text>{(progress.quizzes.length ? progress.quizzes : []).slice(0, 8).map((item) => <View key={item.id} style={styles.recent}><MaterialCommunityIcons name="clipboard-check-outline" size={24} color="#7C3AED" /><View style={{ flex: 1, marginLeft: 10 }}><Text style={styles.recentTitle}>{item.category} Quiz</Text><Text style={styles.recentSub}>{item.date} • {item.total} questions</Text></View><Text style={styles.recentScore}>{item.score}/{item.total}</Text></View>)}{!progress.quizzes.length && <Text style={styles.empty}>এখনও কোনো Quiz result নেই।</Text>}<View style={styles.badges}><Text style={styles.heading}>Badges</Text><Badge unlocked={progress.quizzes.length >= 1} icon="flag-checkered" title="First Quiz" /><Badge unlocked={acc >= 80} icon="trophy" title="Score Master" /><Badge unlocked={progress.bestStreak >= 7} icon="fire" title="7 Day Streak" /></View><TouchableOpacity style={styles.reset} onPress={onReset}><MaterialCommunityIcons name="delete-outline" size={19} color="#DC2626" /><Text style={styles.resetText}>Demo progress reset করুন</Text></TouchableOpacity></ScrollView>; }
   function sectionData(progress) { const names = [{ name: "Electrical", icon: "flash-outline", color: "#0284C7" }, { name: "Electronics", icon: "chip", color: "#9333EA" }, { name: "Calculation", icon: "calculator-variant", color: "#16A34A" }, { name: "Safety", icon: "shield-check", color: "#EA580C" }, { name: "Measurement", icon: "gauge", color: "#0891B2" }, { name: "Power/Fault", icon: "tools", color: "#D97706" }]; return names.map((item) => { const rows = progress.quizzes.flatMap((q) => q.answers || []).filter((a) => a.category === item.name); return { ...item, total: rows.length, correct: rows.filter((a) => a.correct).length }; }); }
   function Stat({ title, value, icon, color }) { return <View style={styles.stat}><MaterialCommunityIcons name={icon} size={22} color={color} /><Text style={[styles.statValue, { color }]}>{value}</Text><Text style={styles.statTitle}>{title}</Text></View>; }
   function Badge({ unlocked, icon, title }) { return <View style={[styles.badge, !unlocked && styles.locked]}><MaterialCommunityIcons name={unlocked ? icon : "lock-outline"} size={23} color={unlocked ? "#D97706" : "#94A3B8"} /><Text style={[styles.badgeTextSmall, !unlocked && styles.lockedText]}>{title}</Text></View>; }
 
-  const styles = StyleSheet.create({ container: { flex: 1, backgroundColor: "#FBFAFF" }, content: { padding: 16, paddingBottom: 35 }, loading: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#FBFAFF" }, loadingText: { color: "#64748B", marginTop: 10 }, hero: { backgroundColor: "#2E1065", borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 }, kicker: { color: "#FDE68A", fontSize: 11, fontWeight: "bold", letterSpacing: 1, marginTop: 12 }, heroTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginTop: 3 }, heroText: { color: "#EDE9FE", lineHeight: 21, marginTop: 9 }, quickStats: { backgroundColor: "#FFFFFF", borderRadius: 15, padding: 13, flexDirection: "row", justifyContent: "space-around", marginBottom: 18 }, quick: { alignItems: "center" }, quickValue: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 3 }, quickTitle: { color: "#64748B", fontSize: 11 }, sectionTitle: { color: "#0F172A", fontSize: 17, fontWeight: "bold", marginBottom: 10 }, chips: { marginBottom: 15 }, chip: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 20, paddingVertical: 10, paddingHorizontal: 13, marginRight: 8 }, activeChip: { backgroundColor: "#7C3AED", borderColor: "#7C3AED" }, chipText: { color: "#475569", fontSize: 12 }, activeText: { color: "#FFFFFF", fontWeight: "bold" }, start: { backgroundColor: "#7C3AED", borderRadius: 12, padding: 15, flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 12 }, startText: { color: "#FFFFFF", fontSize: 15, fontWeight: "bold", marginLeft: 8 }, progressButton: { backgroundColor: "#DBEAFE", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "center", marginBottom: 12 }, progressTitle: { color: "#1D4ED8", fontSize: 15, fontWeight: "bold" }, progressSub: { color: "#2563EB", fontSize: 11, marginTop: 3 }, note: { backgroundColor: "#DCFCE7", borderRadius: 13, padding: 14, flexDirection: "row" }, noteText: { color: "#166534", flex: 1, fontSize: 12, lineHeight: 18, marginLeft: 8 }, quizTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, category: { color: "#7C3AED", fontWeight: "bold", fontSize: 12 }, questionNo: { color: "#0F172A", fontSize: 22, fontWeight: "bold", marginTop: 4 }, timer: { backgroundColor: "#EDE9FE", borderRadius: 20, padding: 9, flexDirection: "row", alignItems: "center" }, timerDanger: { backgroundColor: "#DC2626" }, timerText: { color: "#7C3AED", fontWeight: "bold", marginLeft: 4 }, white: { color: "#FFFFFF" }, progressBg: { height: 7, backgroundColor: "#E2E8F0", borderRadius: 7, overflow: "hidden", marginVertical: 14 }, progressFill: { height: 7, borderRadius: 7 }, scoreLive: { color: "#64748B", fontWeight: "bold", marginBottom: 11 }, questionCard: { backgroundColor: "#7C3AED", borderRadius: 17, padding: 20, marginBottom: 15 }, question: { color: "#FFFFFF", fontSize: 19, lineHeight: 28, fontWeight: "bold" }, option: { backgroundColor: "#FFFFFF", borderRadius: 13, padding: 13, flexDirection: "row", alignItems: "center", marginBottom: 9, borderWidth: 1, borderColor: "#E2E8F0" }, correct: { backgroundColor: "#DCFCE7", borderColor: "#86EFAC" }, wrong: { backgroundColor: "#FEE2E2", borderColor: "#FCA5A5" }, optionLetter: { width: 31, height: 31, borderRadius: 16, backgroundColor: "#EDE9FE", alignItems: "center", justifyContent: "center", marginRight: 9 }, letter: { color: "#5B21B6", fontWeight: "bold" }, optionText: { flex: 1, color: "#334155", fontSize: 14 }, explain: { backgroundColor: "#FEF3C7", borderRadius: 12, padding: 13, flexDirection: "row", marginTop: 4 }, explainText: { color: "#92400E", flex: 1, fontSize: 13, lineHeight: 19, marginLeft: 8 }, next: { backgroundColor: "#7C3AED", borderRadius: 11, padding: 15, flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 12 }, nextText: { color: "#FFFFFF", fontWeight: "bold", marginRight: 7 }, resultHero: { backgroundColor: "#7C3AED", borderRadius: 22, padding: 25, alignItems: "center", marginBottom: 15 }, resultTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold", marginTop: 8 }, resultScore: { color: "#FFFFFF", fontSize: 48, fontWeight: "bold", marginTop: 17 }, resultAccuracy: { color: "#EDE9FE", fontWeight: "bold" }, saved: { backgroundColor: "#DCFCE7", borderRadius: 13, padding: 14, flexDirection: "row", alignItems: "center", marginBottom: 14 }, savedText: { color: "#166534", fontWeight: "bold", marginLeft: 8 }, homeOutline: { borderWidth: 1, borderColor: "#C4B5FD", borderRadius: 12, padding: 14, alignItems: "center" }, homeText: { color: "#7C3AED", fontWeight: "bold" }, progressHeader: { backgroundColor: "#2563EB", borderRadius: 20, padding: 20, flexDirection: "row", alignItems: "center", marginBottom: 16 }, progressHeaderTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold", marginLeft: 13 }, profile: { backgroundColor: "#FFFFFF", borderRadius: 15, padding: 14, flexDirection: "row", alignItems: "center", marginBottom: 13 }, avatar: { width: 55, height: 55, borderRadius: 28, backgroundColor: "#2563EB", alignItems: "center", justifyContent: "center", marginRight: 11 }, profileTitle: { color: "#0F172A", fontWeight: "bold", fontSize: 15 }, profileSub: { color: "#64748B", fontSize: 11, marginTop: 4 }, level: { backgroundColor: "#DBEAFE", borderRadius: 10, padding: 8, alignItems: "center" }, levelSmall: { color: "#2563EB", fontSize: 8, fontWeight: "bold" }, levelBig: { color: "#1D4ED8", fontSize: 19, fontWeight: "bold" }, statGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }, stat: { backgroundColor: "#FFFFFF", width: "48%", borderRadius: 13, padding: 13, marginBottom: 10 }, statValue: { fontSize: 23, fontWeight: "bold", marginTop: 5 }, statTitle: { color: "#64748B", fontSize: 11, marginTop: 2 }, streak: { backgroundColor: "#FFF7ED", borderRadius: 14, padding: 14, flexDirection: "row", alignItems: "center", marginBottom: 17 }, streakTitle: { color: "#9A3412", fontWeight: "bold" }, streakSub: { color: "#C2410C", fontSize: 11, marginTop: 3 }, heading: { color: "#0F172A", fontSize: 19, fontWeight: "bold", marginTop: 5, marginBottom: 10 }, section: { backgroundColor: "#FFFFFF", borderRadius: 13, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 9 }, sectionIcon: { width: 40, height: 40, borderRadius: 11, alignItems: "center", justifyContent: "center", marginRight: 9 }, sectionTop: { flexDirection: "row", justifyContent: "space-between" }, sectionName: { color: "#0F172A", fontWeight: "bold", fontSize: 13 }, sectionScore: { fontWeight: "bold" }, sectionSub: { color: "#64748B", fontSize: 10, marginVertical: 4 }, recent: { backgroundColor: "#FFFFFF", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 8 }, recentTitle: { color: "#0F172A", fontWeight: "bold", fontSize: 13 }, recentSub: { color: "#64748B", fontSize: 10, marginTop: 3 }, recentScore: { color: "#7C3AED", fontWeight: "bold", fontSize: 17 }, empty: { color: "#64748B", textAlign: "center", marginVertical: 15 }, badges: { marginTop: 7 }, badge: { backgroundColor: "#FFFFFF", borderRadius: 12, padding: 13, flexDirection: "row", alignItems: "center", marginBottom: 8 }, locked: { opacity: 0.55 }, badgeTextSmall: { color: "#92400E", fontWeight: "bold", marginLeft: 9 }, lockedText: { color: "#94A3B8" }, reset: { marginTop: 18, flexDirection: "row", alignItems: "center", justifyContent: "center", padding: 12 }, resetText: { color: "#DC2626", fontSize: 12, marginLeft: 5 },
+  const styles = StyleSheet.create({ container: { flex: 1, backgroundColor: "#FBFAFF" }, content: { padding: 16, paddingBottom: 35 }, loading: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#FBFAFF" }, loadingText: { color: "#64748B", marginTop: 10 }, hero: { backgroundColor: "#2E1065", borderRadius: 22, padding: 23, marginBottom: 17 }, kicker: { color: "#FDE68A", fontSize: 11, fontWeight: "bold", letterSpacing: 1, marginTop: 12 }, heroTitle: { color: "#FFFFFF", fontSize: 28, fontWeight: "bold", marginTop: 5 }, heroText: { color: "#EDE9FE", lineHeight: 21, marginTop: 9 }, quickStats: { backgroundColor: "#FFFFFF", borderRadius: 15, padding: 13, flexDirection: "row", justifyContent: "space-around", marginBottom: 18 }, quick: { alignItems: "center" }, quickValue: { color: "#0F172A", fontSize: 21, fontWeight: "bold", marginTop: 3 }, quickTitle: { color: "#64748B", fontSize: 11 }, sectionTitle: { color: "#0F172A", fontSize: 17, fontWeight: "bold", marginBottom: 10 }, chips: { marginBottom: 15 }, chip: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 20, paddingVertical: 10, paddingHorizontal: 13, marginRight: 8 }, activeChip: { backgroundColor: "#7C3AED", borderColor: "#7C3AED" }, chipText: { color: "#475569", fontSize: 12 }, activeText: { color: "#FFFFFF", fontWeight: "bold" }, start: { backgroundColor: "#7C3AED", borderRadius: 12, padding: 15, flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 12 }, startText: { color: "#FFFFFF", fontSize: 15, fontWeight: "bold", marginLeft: 8 }, progressButton: { backgroundColor: "#DBEAFE", borderRadius: 14, padding: 15, flexDirection: "row", alignItems: "center", marginBottom: 12 }, progressTitle: { color: "#1D4ED8", fontSize: 15, fontWeight: "bold" }, progressSub: { color: "#2563EB", fontSize: 11, marginTop: 3 }, note: { backgroundColor: "#DCFCE7", borderRadius: 13, padding: 14, flexDirection: "row" }, noteText: { color: "#166534", flex: 1, fontSize: 12, lineHeight: 18, marginLeft: 8 }, quizTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, category: { color: "#7C3AED", fontWeight: "bold", fontSize: 12 }, questionNo: { color: "#0F172A", fontSize: 22, fontWeight: "bold", marginTop: 4 }, timer: { backgroundColor: "#EDE9FE", borderRadius: 20, padding: 9, flexDirection: "row", alignItems: "center" }, timerDanger: { backgroundColor: "#DC2626" }, timerText: { color: "#7C3AED", fontWeight: "bold", marginLeft: 4 }, white: { color: "#FFFFFF" }, progressBg: { height: 7, backgroundColor: "#E2E8F0", borderRadius: 7, overflow: "hidden", marginVertical: 14 }, progressFill: { height: 7, borderRadius: 7 }, scoreLive: { color: "#64748B", fontWeight: "bold", marginBottom: 11 }, questionCard: { backgroundColor: "#7C3AED", borderRadius: 17, padding: 20, marginBottom: 15 }, question: { color: "#FFFFFF", fontSize: 19, lineHeight: 28, fontWeight: "bold" }, option: { backgroundColor: "#FFFFFF", borderRadius: 13, padding: 13, flexDirection: "row", alignItems: "center", marginBottom: 9, borderWidth: 1, borderColor: "#E2E8F0" }, correct: { backgroundColor: "#DCFCE7", borderColor: "#86EFAC" }, wrong: { backgroundColor: "#FEE2E2", borderColor: "#FCA5A5" }, optionLetter: { width: 31, height: 31, borderRadius: 16, backgroundColor: "#EDE9FE", alignItems: "center", justifyContent: "center", marginRight: 9 }, letter: { color: "#5B21B6", fontWeight: "bold" }, optionText: { flex: 1, color: "#334155", fontSize: 14 }, explain: { backgroundColor: "#FEF3C7", borderRadius: 12, padding: 13, flexDirection: "row", marginTop: 4 }, explainText: { color: "#92400E", flex: 1, fontSize: 13, lineHeight: 19, marginLeft: 8 }, next: { backgroundColor: "#7C3AED", borderRadius: 11, padding: 15, flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 12 }, nextText: { color: "#FFFFFF", fontWeight: "bold", marginRight: 7 }, resultHero: { backgroundColor: "#7C3AED", borderRadius: 22, padding: 25, alignItems: "center", marginBottom: 15 }, resultTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold", marginTop: 8 }, resultScore: { color: "#FFFFFF", fontSize: 48, fontWeight: "bold", marginTop: 17 }, resultAccuracy: { color: "#EDE9FE", fontWeight: "bold" }, saved: { backgroundColor: "#DCFCE7", borderRadius: 13, padding: 14, flexDirection: "row", alignItems: "center", marginBottom: 14 }, savedText: { color: "#166534", fontWeight: "bold", marginLeft: 8 }, homeOutline: { borderWidth: 1, borderColor: "#C4B5FD", borderRadius: 12, padding: 14, alignItems: "center" }, homeText: { color: "#7C3AED", fontWeight: "bold" }, progressHeader: { backgroundColor: "#2563EB", borderRadius: 20, padding: 20, flexDirection: "row", alignItems: "center", marginBottom: 16 }, progressHeaderTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold", marginLeft: 13 }, profile: { backgroundColor: "#FFFFFF", borderRadius: 15, padding: 14, flexDirection: "row", alignItems: "center", marginBottom: 13 }, avatar: { width: 55, height: 55, borderRadius: 28, backgroundColor: "#2563EB", alignItems: "center", justifyContent: "center", marginRight: 11 }, profileTitle: { color: "#0F172A", fontWeight: "bold", fontSize: 15 }, profileSub: { color: "#64748B", fontSize: 11, marginTop: 4 }, level: { backgroundColor: "#DBEAFE", borderRadius: 10, padding: 8, alignItems: "center" }, levelSmall: { color: "#2563EB", fontSize: 8, fontWeight: "bold" }, levelBig: { color: "#1D4ED8", fontSize: 19, fontWeight: "bold" }, statGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }, stat: { backgroundColor: "#FFFFFF", width: "48%", borderRadius: 13, padding: 13, marginBottom: 10 }, statValue: { fontSize: 23, fontWeight: "bold", marginTop: 5 }, statTitle: { color: "#64748B", fontSize: 11, marginTop: 2 }, streak: { backgroundColor: "#FFF7ED", borderRadius: 14, padding: 14, flexDirection: "row", alignItems: "center", marginBottom: 17 }, streakTitle: { color: "#9A3412", fontWeight: "bold" }, streakSub: { color: "#C2410C", fontSize: 11, marginTop: 3 }, heading: { color: "#0F172A", fontSize: 19, fontWeight: "bold", marginTop: 5, marginBottom: 10 }, section: { backgroundColor: "#FFFFFF", borderRadius: 13, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 9 }, sectionIcon: { width: 40, height: 40, borderRadius: 11, alignItems: "center", justifyContent: "center", marginRight: 9 }, sectionTop: { flexDirection: "row", justifyContent: "space-between" }, sectionName: { color: "#0F172A", fontWeight: "bold", fontSize: 13 }, sectionScore: { fontWeight: "bold" }, sectionSub: { color: "#64748B", fontSize: 10, marginVertical: 4 }, recent: { backgroundColor: "#FFFFFF", borderRadius: 12, padding: 12, flexDirection: "row", alignItems: "center", marginBottom: 8 }, recentTitle: { color: "#0F172A", fontWeight: "bold", fontSize: 13 }, recentSub: { color: "#64748B", fontSize: 10, marginTop: 3 }, recentScore: { color: "#7C3AED", fontWeight: "bold", fontSize: 17 }, empty: { color: "#64748B", textAlign: "center", marginVertical: 15 }, badges: { marginTop: 7 }, badge: { backgroundColor: "#FFFFFF", borderRadius: 12, padding: 13, flexDirection: "row", alignItems: "center", marginBottom: 8 }, locked: { opacity: 0.55 }, badgeTextSmall: { color: "#92400E", fontWeight: "bold", marginLeft: 9 }, lockedText: { color: "#94A3B8" }, reset: { marginTop: 18, flexDirection: "row", alignItems: "center", justifyContent: "center", padding: 12 }, resetText: { color: "#DC2626", fontSize: 12, marginLeft: 5 },
   });
 
   return App;
@@ -3015,7 +3096,9 @@ const SavedTopicsModule = (() => {
   const CATEGORIES = ["সব বিষয়", "Electrical", "Electronics", "Calculation", "Safety", "Measurement", "Power/Fault"];
 
   function App() {
+    const SAVED_KEY = "electrical_saved_topics_v2";
     const [savedIds, setSavedIds] = useState(["ohm", "multimeter", "shock"]);
+    const [savedLoaded, setSavedLoaded] = useState(false);
     const [category, setCategory] = useState("সব বিষয়");
     const [search, setSearch] = useState("");
     const [showSavedOnly, setShowSavedOnly] = useState(true);
@@ -3027,7 +3110,8 @@ const SavedTopicsModule = (() => {
     }), [savedIds, category, search]);
     const allTopics = useMemo(() => TOPICS.filter((item) => category === "সব বিষয়" || item.category === category).filter((item) => !search.trim() || `${item.title} ${item.summary}`.toLowerCase().includes(search.toLowerCase())), [category, search]);
     const list = showSavedOnly ? savedTopics : allTopics;
-
+    useEffect(() => { AsyncStorage.getItem(SAVED_KEY).then((raw) => { if (raw) setSavedIds(JSON.parse(raw)); }).catch(() => {}).finally(() => setSavedLoaded(true)); }, []);
+    useEffect(() => { if (savedLoaded) AsyncStorage.setItem(SAVED_KEY, JSON.stringify(savedIds)).catch(() => {}); }, [savedIds, savedLoaded]);
     function toggleSaved(id) { setSavedIds((old) => old.includes(id) ? old.filter((value) => value !== id) : [...old, id]); }
     if (selected) return <TopicDetail topic={selected} saved={savedIds.includes(selected.id)} onToggle={() => toggleSaved(selected.id)} onBack={() => setSelected(null)} />;
     return <ScrollView style={styles.container} contentContainerStyle={styles.content}><NavRow light={false} /><View style={styles.header}><MaterialCommunityIcons name="bookmark-multiple" size={31} color="#FFFFFF" /><Text style={styles.headerTitle}>Saved Topics</Text></View><View style={styles.hero}><View style={styles.bookmark}><MaterialCommunityIcons name="bookmark" size={30} color="#FFFFFF" /></View><View style={{ flex: 1 }}><Text style={styles.heroTitle}>{savedIds.length}টি Topic Saved</Text><Text style={styles.heroText}>গুরুত্বপূর্ণ lesson পরে দ্রুত পড়ুন।</Text></View></View><View style={styles.search}><MaterialCommunityIcons name="magnify" size={21} color="#64748B" /><TextInput value={search} onChangeText={setSearch} placeholder="Saved topic খুঁজুন..." placeholderTextColor="#94A3B8" style={styles.input} /></View><ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chips}>{CATEGORIES.map((item) => <TouchableOpacity key={item} onPress={() => setCategory(item)} style={[styles.chip, category === item && styles.activeChip]}><Text style={[styles.chipText, category === item && styles.activeText]}>{item}</Text></TouchableOpacity>)}</ScrollView><View style={styles.toggleRow}><Text style={styles.heading}>Topic List ({list.length})</Text><TouchableOpacity style={[styles.toggle, showSavedOnly && styles.toggleActive]} onPress={() => setShowSavedOnly((value) => !value)}><MaterialCommunityIcons name={showSavedOnly ? "bookmark" : "view-grid-outline"} size={17} color={showSavedOnly ? "#FFFFFF" : "#64748B"} /><Text style={[styles.toggleText, showSavedOnly && styles.activeText]}>{showSavedOnly ? "Saved only" : "সব Topic"}</Text></TouchableOpacity></View>{list.map((item) => <TopicCard key={item.id} topic={item} saved={savedIds.includes(item.id)} onSave={() => toggleSaved(item.id)} onOpen={() => setSelected(item)} />)}{!list.length && <Empty showSavedOnly={showSavedOnly} onShowAll={() => setShowSavedOnly(false)} />}</ScrollView>;
@@ -3037,7 +3121,7 @@ const SavedTopicsModule = (() => {
   function TopicDetail({ topic, saved, onToggle, onBack }) { return <ScrollView style={styles.container} contentContainerStyle={styles.content}><View style={[styles.detailHeader, { backgroundColor: topic.color }]}><NavRow onBack={onBack} /><MaterialCommunityIcons name={topic.icon} size={45} color="#FFFFFF" /><Text style={styles.detailTitle}>{topic.title}</Text><Text style={styles.detailCategory}>{topic.category}</Text></View><View style={styles.detailCard}><Text style={styles.detailHeading}>সহজ ভাষায় জানুন</Text><Text style={styles.detailText}>{topic.detail}</Text></View><View style={styles.detailCard}><Text style={styles.detailHeading}>Quick Revision</Text><Text style={styles.detailText}>{topic.summary}</Text></View><TouchableOpacity style={[styles.saveLarge, saved && styles.unsave]} onPress={onToggle}><MaterialCommunityIcons name={saved ? "bookmark-remove" : "bookmark-plus"} size={22} color="#FFFFFF" /><Text style={styles.saveLargeText}>{saved ? "Saved থেকে Remove করুন" : "এই Topic Save করুন"}</Text></TouchableOpacity><TouchableOpacity style={styles.backButton} onPress={onBack}><Text style={styles.backButtonText}>Saved Topics-এ ফিরে যান</Text></TouchableOpacity></ScrollView>; }
   function Empty({ showSavedOnly, onShowAll }) { return <View style={styles.empty}><MaterialCommunityIcons name="bookmark-off-outline" size={46} color="#94A3B8" /><Text style={styles.emptyTitle}>{showSavedOnly ? "এখনও কোনো Saved Topic নেই" : "কোনো Topic পাওয়া যায়নি"}</Text><Text style={styles.emptyText}>{showSavedOnly ? "Topic-এর পাশে Save চাপলে এখানে দেখা যাবে।" : "Search বা category পরিবর্তন করে দেখুন।"}</Text>{showSavedOnly && <TouchableOpacity style={styles.showAll} onPress={onShowAll}><Text style={styles.showAllText}>সব Topic দেখুন</Text></TouchableOpacity>}</View>; }
 
-  const styles = StyleSheet.create({ container: { flex: 1, backgroundColor: "#FBFAFF" }, content: { padding: 16, paddingBottom: 35 }, header: { backgroundColor: "#7C3AED", borderRadius: 20, padding: 21, flexDirection: "row", alignItems: "center", marginBottom: 16 }, headerTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginLeft: 9 }, hero: { backgroundColor: "#EDE9FE", borderRadius: 16, padding: 16, flexDirection: "row", alignItems: "center", marginBottom: 15 }, bookmark: { width: 55, height: 55, borderRadius: 16, backgroundColor: "#7C3AED", alignItems: "center", justifyContent: "center", marginRight: 12 }, heroTitle: { color: "#4C1D95", fontSize: 18, fontWeight: "bold" }, heroText: { color: "#6D28D9", fontSize: 12, marginTop: 4 }, search: { height: 49, backgroundColor: "#FFFFFF", borderRadius: 12, borderWidth: 1, borderColor: "#E2E8F0", paddingHorizontal: 13, flexDirection: "row", alignItems: "center", marginBottom: 12 }, input: { flex: 1, color: "#1E293B", marginLeft: 8, fontSize: 14 }, chips: { marginBottom: 13 }, chip: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 20, paddingVertical: 9, paddingHorizontal: 12, marginRight: 8 }, activeChip: { backgroundColor: "#7C3AED", borderColor: "#7C3AED" }, chipText: { color: "#475569", fontSize: 12 }, activeText: { color: "#FFFFFF", fontWeight: "bold" }, toggleRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }, heading: { color: "#0F172A", fontSize: 20, fontWeight: "bold" }, toggle: { borderRadius: 18, borderWidth: 1, borderColor: "#CBD5E1", paddingVertical: 7, paddingHorizontal: 12, flexDirection: "row", alignItems: "center" }, toggleActive: { backgroundColor: "#7C3AED", borderColor: "#7C3AED" }, toggleText: { color: "#64748B", fontSize: 11, marginLeft: 4 }, card: { backgroundColor: "#FFFFFF", borderRadius: 14, padding: 12, marginBottom: 10, borderWidth: 1, borderColor: "#E2E8F0" }, cardMain: { flexDirection: "row", alignItems: "center" }, topicIcon: { width: 46, height: 46, borderRadius: 13, alignItems: "center", justifyContent: "center", marginRight: 10 }, topicTitle: { color: "#0F172A", fontSize: 15, fontWeight: "bold" }, category: { fontSize: 11, fontWeight: "bold", marginTop: 3 }, summary: { color: "#64748B", fontSize: 11, marginTop: 3 }, cardBottom: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderTopWidth: 1, borderTopColor: "#F1F5F9", marginTop: 10, paddingTop: 9 }, readText: { color: "#94A3B8", fontSize: 11 }, saveButton: { flexDirection: "row", alignItems: "center", padding: 3 }, saveText: { color: "#64748B", fontSize: 12, fontWeight: "bold", marginLeft: 4 }, empty: { backgroundColor: "#FFFFFF", borderRadius: 16, padding: 28, alignItems: "center", marginTop: 10 }, emptyTitle: { color: "#334155", fontSize: 16, fontWeight: "bold", marginTop: 10 }, emptyText: { color: "#64748B", fontSize: 12, textAlign: "center", marginTop: 5 }, showAll: { backgroundColor: "#7C3AED", borderRadius: 9, paddingVertical: 10, paddingHorizontal: 14, marginTop: 14 }, showAllText: { color: "#FFFFFF", fontWeight: "bold", fontSize: 12 }, detailHeader: { borderRadius: 20, padding: 21, marginBottom: 16 }, back: { flexDirection: "row", alignItems: "center", marginBottom: 20 }, backText: { color: "#FFFFFF", fontWeight: "bold", marginLeft: 7 }, detailTitle: { color: "#FFFFFF", fontSize: 26, fontWeight: "bold", marginTop: 12 }, detailCategory: { color: "#F3E8FF", marginTop: 5 }, detailCard: { backgroundColor: "#FFFFFF", borderRadius: 15, padding: 17, marginBottom: 12, borderLeftWidth: 4, borderLeftColor: "#7C3AED" }, detailHeading: { color: "#7C3AED", fontSize: 16, fontWeight: "bold", marginBottom: 8 }, detailText: { color: "#334155", fontSize: 14, lineHeight: 22 }, saveLarge: { backgroundColor: "#7C3AED", borderRadius: 12, padding: 15, flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 10 }, unsave: { backgroundColor: "#DC2626" }, saveLargeText: { color: "#FFFFFF", fontWeight: "bold", marginLeft: 8 }, backButton: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#C4B5FD", borderRadius: 12, padding: 14, alignItems: "center" }, backButtonText: { color: "#7C3AED", fontWeight: "bold" },
+  const styles = StyleSheet.create({ container: { flex: 1, backgroundColor: "#FBFAFF" }, content: { padding: 16, paddingBottom: 35 }, header: { backgroundColor: "#7C3AED", borderRadius: 20, padding: 21, flexDirection: "row", alignItems: "center", marginBottom: 16 }, headerTitle: { color: "#FFFFFF", fontSize: 26, fontWeight: "bold", marginLeft: 11 }, hero: { backgroundColor: "#EDE9FE", borderRadius: 16, padding: 16, flexDirection: "row", alignItems: "center", marginBottom: 15 }, bookmark: { width: 55, height: 55, borderRadius: 16, backgroundColor: "#7C3AED", alignItems: "center", justifyContent: "center", marginRight: 12 }, heroTitle: { color: "#4C1D95", fontSize: 18, fontWeight: "bold" }, heroText: { color: "#6D28D9", fontSize: 12, marginTop: 4 }, search: { height: 49, backgroundColor: "#FFFFFF", borderRadius: 12, borderWidth: 1, borderColor: "#E2E8F0", paddingHorizontal: 13, flexDirection: "row", alignItems: "center", marginBottom: 12 }, input: { flex: 1, color: "#1E293B", marginLeft: 8, fontSize: 14 }, chips: { marginBottom: 13 }, chip: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#CBD5E1", borderRadius: 20, paddingVertical: 9, paddingHorizontal: 12, marginRight: 8 }, activeChip: { backgroundColor: "#7C3AED", borderColor: "#7C3AED" }, chipText: { color: "#475569", fontSize: 12 }, activeText: { color: "#FFFFFF", fontWeight: "bold" }, toggleRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }, heading: { color: "#0F172A", fontSize: 20, fontWeight: "bold" }, toggle: { borderRadius: 18, borderWidth: 1, borderColor: "#CBD5E1", paddingVertical: 7, paddingHorizontal: 10, flexDirection: "row", alignItems: "center" }, toggleActive: { backgroundColor: "#7C3AED", borderColor: "#7C3AED" }, toggleText: { color: "#64748B", fontSize: 11, marginLeft: 4 }, card: { backgroundColor: "#FFFFFF", borderRadius: 14, padding: 12, marginBottom: 10, borderWidth: 1, borderColor: "#E2E8F0" }, cardMain: { flexDirection: "row", alignItems: "center" }, topicIcon: { width: 46, height: 46, borderRadius: 13, alignItems: "center", justifyContent: "center", marginRight: 10 }, topicTitle: { color: "#0F172A", fontSize: 15, fontWeight: "bold" }, category: { fontSize: 11, fontWeight: "bold", marginTop: 3 }, summary: { color: "#64748B", fontSize: 11, marginTop: 3 }, cardBottom: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderTopWidth: 1, borderTopColor: "#F1F5F9", marginTop: 10, paddingTop: 9 }, readText: { color: "#94A3B8", fontSize: 11 }, saveButton: { flexDirection: "row", alignItems: "center", padding: 3 }, saveText: { color: "#64748B", fontSize: 12, fontWeight: "bold", marginLeft: 4 }, empty: { backgroundColor: "#FFFFFF", borderRadius: 16, padding: 28, alignItems: "center", marginTop: 10 }, emptyTitle: { color: "#334155", fontSize: 16, fontWeight: "bold", marginTop: 10 }, emptyText: { color: "#64748B", fontSize: 12, textAlign: "center", marginTop: 5 }, showAll: { backgroundColor: "#7C3AED", borderRadius: 9, paddingVertical: 10, paddingHorizontal: 14, marginTop: 14 }, showAllText: { color: "#FFFFFF", fontWeight: "bold", fontSize: 12 }, detailHeader: { borderRadius: 20, padding: 21, marginBottom: 16 }, back: { flexDirection: "row", alignItems: "center", marginBottom: 20 }, backText: { color: "#FFFFFF", fontWeight: "bold", marginLeft: 7 }, detailTitle: { color: "#FFFFFF", fontSize: 26, fontWeight: "bold", marginTop: 12 }, detailCategory: { color: "#F3E8FF", marginTop: 5 }, detailCard: { backgroundColor: "#FFFFFF", borderRadius: 15, padding: 17, marginBottom: 12, borderLeftWidth: 4, borderLeftColor: "#7C3AED" }, detailHeading: { color: "#7C3AED", fontSize: 16, fontWeight: "bold", marginBottom: 8 }, detailText: { color: "#334155", fontSize: 14, lineHeight: 22 }, saveLarge: { backgroundColor: "#7C3AED", borderRadius: 12, padding: 15, flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 10 }, unsave: { backgroundColor: "#DC2626" }, saveLargeText: { color: "#FFFFFF", fontWeight: "bold", marginLeft: 8 }, backButton: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#C4B5FD", borderRadius: 12, padding: 14, alignItems: "center" }, backButtonText: { color: "#7C3AED", fontWeight: "bold" },
   });
 
   return App;
@@ -3436,19 +3520,19 @@ const PLCModule = (() => {
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#F5F7FB" },
     content: { padding: 16, paddingBottom: 35 },
-    hero: { backgroundColor: "#0F172A", borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
+    hero: { backgroundColor: "#0F172A", borderRadius: 20, padding: 22, marginBottom: 14 },
     kicker: { color: "#93C5FD", fontSize: 11, fontWeight: "bold", letterSpacing: 1.5, marginTop: 12 },
-    heroTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginTop: 3 },
+    heroTitle: { color: "#FFFFFF", fontSize: 28, fontWeight: "bold", marginTop: 4 },
     heroText: { color: "#DBEAFE", fontSize: 13, marginTop: 8, lineHeight: 20 },
     heroSub: { color: "#93C5FD", fontSize: 12, marginTop: 6 },
     statRow: { flexDirection: "row", flexWrap: "wrap", marginHorizontal: -5, marginBottom: 6 },
     stat: { width: "50%", padding: 5 },
     statValue: { backgroundColor: "#FFFFFF", color: "#1E3A8A", fontSize: 24, fontWeight: "bold", paddingTop: 14, paddingHorizontal: 14, borderTopLeftRadius: 14, borderTopRightRadius: 14, borderWidth: 1, borderBottomWidth: 0, borderColor: "#E2E6EF", overflow: "hidden" },
     statLabel: { backgroundColor: "#FFFFFF", color: "#64748B", fontSize: 12, paddingBottom: 14, paddingHorizontal: 14, borderBottomLeftRadius: 14, borderBottomRightRadius: 14, borderWidth: 1, borderTopWidth: 0, borderColor: "#E2E6EF", overflow: "hidden" },
-    startCard: { backgroundColor: "#1D4ED8", borderRadius: 16, padding: 12, flexDirection: "row", alignItems: "center", marginVertical: 6 },
-    startIcon: { width: 42, height: 42, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center", marginRight: 12 },
-    startTitle: { color: "#FFFFFF", fontSize: 15, fontWeight: "bold" },
-    startText: { color: "#DBEAFE", fontSize: 11, marginTop: 2 },
+    startCard: { backgroundColor: "#1D4ED8", borderRadius: 16, padding: 16, flexDirection: "row", alignItems: "center", marginVertical: 8 },
+    startIcon: { width: 50, height: 50, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center", marginRight: 12 },
+    startTitle: { color: "#FFFFFF", fontSize: 17, fontWeight: "bold" },
+    startText: { color: "#DBEAFE", fontSize: 12, marginTop: 3 },
     panel: { backgroundColor: "#FFFFFF", borderRadius: 16, borderWidth: 1, borderColor: "#E2E6EF", padding: 16, marginTop: 12 },
     panelTitle: { color: "#0F172A", fontSize: 16, fontWeight: "bold", marginBottom: 6 },
     panelText: { color: "#475569", fontSize: 13, lineHeight: 20, marginBottom: 10 },
@@ -3457,7 +3541,7 @@ const PLCModule = (() => {
     th: { backgroundColor: "#EEF2F8" },
     td: { flex: 1, padding: 8, fontSize: 12, color: "#172033" },
     thText: { fontWeight: "bold" },
-    header: { borderRadius: 16, padding: 16, paddingTop: 22, marginBottom: 12 },
+    header: { borderRadius: 20, padding: 20, marginBottom: 14 },
     back: { flexDirection: "row", alignItems: "center", marginBottom: 14 },
     backText: { color: "#FFFFFF", fontWeight: "bold", marginLeft: 7 },
     headerRow: { flexDirection: "row", alignItems: "center" },
@@ -3530,6 +3614,18 @@ const JobPrepModule = (() => {
     { id: "career", group: "Practical ও Career", icon: "trending-up", title: "Career ও বেতন আলোচনা", summary: "শুরু থেকে পরের ধাপে যাওয়ার পথ।",
       points: ["শুরুতে হাতে-কলমে অভিজ্ঞতা সবচেয়ে গুরুত্বপূর্ণ।", "Helper বা technician থেকে senior technician, supervisor ও engineer পদের দিকে যাওয়া যায়।", "PLC, VFD ও panel wiring-এর মতো দক্ষতা যোগ করলে সুযোগ বাড়ে।", "বেতন নিয়ে কথা বলার সময় নিজের দক্ষতা ও কাজের প্রমাণ দেখান।"],
       tip: "প্রতি বছর অন্তত একটি নতুন দক্ষতা শেখার লক্ষ্য রাখুন।" },
+    { id: "roles", group: "Practical ও Career", icon: "account-hard-hat", title: "কাজের পদ ও দায়িত্ব", summary: "Helper, technician, supervisor ও maintenance role-এর পার্থক্য।",
+      points: ["Electrical helper সাধারণত tool, material ও basic support-এর কাজ করে।", "Technician wiring, testing, panel ও equipment maintenance করতে পারে।", "Supervisor কাজ ভাগ করে, safety ও quality check করে।", "Maintenance technician fault finding, preventive maintenance ও record রাখে।"],
+      tip: "যে পদে আবেদন করবেন, সেই পদের কাজের তালিকা আগে বুঝে নিন।" },
+    { id: "portfolio", group: "Practical ও Career", icon: "folder-star-outline", title: "Skill Portfolio", summary: "নিজের কাজের প্রমাণ সুন্দরভাবে রাখুন।",
+      points: ["নিজের wiring diagram, control panel sketch ও calculation-এর sample রাখুন।", "কাজের ছবি তুললে মানুষের মুখ, company logo বা confidential information প্রকাশ করবেন না।", "কোন tool, meter বা PLC software ব্যবহার করেছেন তা লিখে রাখুন।", "প্রতিটি project-এ problem, action ও result তিনটি অংশ লিখুন।"],
+      tip: "শুধু ‘আমি কাজ জানি’ না বলে কাজের প্রমাণ দেখাতে পারলে বিশ্বাসযোগ্যতা বাড়ে।" },
+    { id: "workplace", group: "Practical ও Career", icon: "account-group-outline", title: "Workplace Communication", summary: "Team-এর সঙ্গে নিরাপদ ও পরিষ্কারভাবে কাজ করুন।",
+      points: ["কাজ শুরুর আগে supervisor-কে task, risk ও isolation condition জানান।", "Fault পেলে অনুমান না করে observation ও measurement share করুন।", "কাজ শেষ হলে কোন terminal, setting বা part পরিবর্তন করেছেন তা record করুন।", "Emergency বা unsafe condition লুকাবেন না; সঙ্গে সঙ্গে report করুন।"],
+      tip: "ভালো technician-এর skill-এর সঙ্গে ভালো communication-ও প্রয়োজন।" },
+    { id: "learning-plan", group: "Practical ও Career", icon: "calendar-check-outline", title: "90-Day Learning Plan", summary: "তিন মাসে job-ready হওয়ার একটি সহজ পরিকল্পনা।",
+      points: ["প্রথম ৩০ দিন: safety, tools, meter, Ohm’s Law ও basic wiring revise করুন।", "পরের ৩০ দিন: motor control, panel reading, fault finding ও practical practice করুন।", "শেষ ৩০ দিন: PLC basics, CV, portfolio ও mock technical questions প্রস্তুত করুন।", "প্রতি সপ্তাহে শেখা বিষয় লিখে progress check করুন।"],
+      tip: "প্রতিদিন অল্প করে practice করলে ধারাবাহিকতা তৈরি হয়।" },
   ];
 
   function App() {
@@ -3626,7 +3722,7 @@ const JobPrepModule = (() => {
     content: { padding: 16, paddingBottom: 35 },
     header: { backgroundColor: COLOR, borderRadius: 20, padding: 20, marginBottom: 14 },
     headerRow: { flexDirection: "row", alignItems: "center" },
-    headerTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "bold", marginLeft: 9, flex: 1 },
+    headerTitle: { color: "#FFFFFF", fontSize: 24, fontWeight: "bold", marginLeft: 11, flex: 1 },
     headerSub: { color: "#FFE4E6", fontSize: 13, lineHeight: 20, marginTop: 8 },
     search: { height: 49, backgroundColor: "#FFFFFF", borderRadius: 12, borderWidth: 1, borderColor: "#E2E8F0", paddingHorizontal: 13, flexDirection: "row", alignItems: "center", marginBottom: 12 },
     input: { flex: 1, color: "#1E293B", marginLeft: 8, fontSize: 14 },
@@ -3648,11 +3744,209 @@ const JobPrepModule = (() => {
     blockTitle: { fontSize: 16, fontWeight: "bold", marginLeft: 8 },
     body: { color: "#334155", fontSize: 14, lineHeight: 23 },
     bullet: { color: "#334155", fontSize: 14, lineHeight: 23, marginBottom: 6 },
-    qa: { backgroundColor: "#FFFFFF", borderRadius: 14, borderWidth: 1, borderColor: "#FECDD3", padding: 16, paddingTop: 22, marginBottom: 12 },
+    qa: { backgroundColor: "#FFFFFF", borderRadius: 14, borderWidth: 1, borderColor: "#FECDD3", padding: 14, marginBottom: 10 },
     q: { color: COLOR, fontSize: 14, fontWeight: "bold", marginBottom: 6 },
     a: { color: "#334155", fontSize: 14, lineHeight: 22 },
   });
 
+  return App;
+})();
+
+
+/* ==================================================
+   TOOLS LIBRARY — exact image না থাকলে blank থাকবে
+   ================================================== */
+const TOOLS_LIBRARY = [
+  ["hand", "Hand Tools", "Combination Plier, Long Nose Plier, Side Cutter, Wire Stripper, Cable Cutter"],
+  ["screwdriver", "Screwdriver & Fastening", "Insulated Screwdriver, Torque Screwdriver, Socket Set, Measuring Tape"],
+  ["gauge", "Measuring & Testing", "Digital Multimeter, Clamp Meter, Megger, Earth Tester, Phase Sequence Meter"],
+  ["cable-data", "Wiring & Cable", "Cable Lug Crimper, Ferrule Crimper, Fish Tape, Cable Gland Tool"],
+  ["view-dashboard-outline", "Panel & Industrial", "Panel Punch, DIN Rail Cutter, Hydraulic Crimper, Gland Spanner"],
+  ["soldering-iron", "Electronics Repair", "Soldering Iron, Desoldering Pump, Hot Air Station, PCB Holder, Oscilloscope"],
+  ["drill", "Drilling & Mounting", "Electric Drill, Step Drill Bit, Hole Saw, File Set, Hacksaw"],
+  ["hard-hat", "Safety & PPE", "Insulated Gloves, Safety Goggles, Helmet, LOTO Kit, Rescue Hook"],
+  ["tape-measure", "Consumable Materials", "Insulation Tape, Heat Shrink, Cable Lug, Ferrule, Cable Gland, Spare Fuse"],
+  ["spray-bottle", "Cleaning & Maintenance", "Contact Cleaner, ESD Brush, IPA, Air Blower, Thermal Camera"],
+].map(([icon, title, tools]) => ({ icon, title, tools }));
+
+const ToolsModule = (() => {
+  function App() {
+    const [search, setSearch] = useState("");
+    const [saved, setSaved] = useState([]);
+    const q = search.trim().toLowerCase();
+    const list = TOOLS_LIBRARY.filter((x) => `${x.title} ${x.tools}`.toLowerCase().includes(q));
+    return <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <View style={{ backgroundColor: "#0F766E", borderRadius: 22, padding: 22, marginBottom: 15 }}><NavRow /><Text style={{ color: "#CCFBF1", fontSize: 10, fontWeight: "bold", letterSpacing: 1 }}>ELECTRICAL & ELECTRONICS</Text><Text style={{ color: "#FFFFFF", fontSize: 28, fontWeight: "bold", marginTop: 6 }}>Tools Library</Text><Text style={{ color: "#CCFBF1", fontSize: 13, lineHeight: 20, marginTop: 7 }}>প্রয়োজনীয় tools category অনুযায়ী শিখুন। সঠিক ছবি upload না হওয়া পর্যন্ত blank placeholder থাকবে।</Text></View>
+      <View style={styles.searchBox}><MaterialCommunityIcons name="magnify" size={21} color="#64748B" /><TextInput value={search} onChangeText={setSearch} placeholder="Tool বা category খুঁজুন..." placeholderTextColor="#94A3B8" style={styles.searchInput} /></View>
+      <Text style={styles.sectionHeading}>Tools Categories ({list.length})</Text>
+      {list.map((item) => <View key={item.title} style={{ backgroundColor: "#FFFFFF", borderRadius: 15, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: "#D1FAE5" }}><View style={{ flexDirection: "row", alignItems: "center" }}><View style={{ width: 46, height: 46, borderRadius: 13, backgroundColor: "#CCFBF1", alignItems: "center", justifyContent: "center", marginRight: 11 }}><MaterialCommunityIcons name={item.icon} size={24} color="#0F766E" /></View><View style={{ flex: 1 }}><Text style={{ color: "#0F172A", fontSize: 16, fontWeight: "bold" }}>{item.title}</Text><Text style={{ color: "#64748B", fontSize: 11, lineHeight: 17, marginTop: 4 }}>{item.tools}</Text></View><TouchableOpacity onPress={() => setSaved((v) => v.includes(item.title) ? v.filter((x) => x !== item.title) : [...v, item.title])}><MaterialCommunityIcons name={saved.includes(item.title) ? "bookmark" : "bookmark-outline"} size={23} color="#0F766E" /></TouchableOpacity></View><View style={{ backgroundColor: "#F1F5F9", height: 78, borderRadius: 10, marginTop: 11, alignItems: "center", justifyContent: "center" }}><MaterialCommunityIcons name="image-off-outline" size={25} color="#94A3B8" /><Text style={{ color: "#64748B", fontSize: 11, marginTop: 4 }}>ছবি পরে Upload করা হবে</Text></View></View>)}
+    </ScrollView>;
+  }
+  return App;
+})();
+
+function SettingsModal({ visible, onClose, fullscreen, setFullscreen, notifications, toggleNotifications }) {
+  return <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}><View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(15,23,42,0.45)" }}><View style={{ backgroundColor: "#FFFFFF", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 34 }}><View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}><Text style={{ color: "#0F172A", fontSize: 22, fontWeight: "bold" }}>App Settings</Text><TouchableOpacity onPress={onClose}><Text style={{ color: "#2563EB", fontWeight: "bold" }}>বন্ধ করুন</Text></TouchableOpacity></View><View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: "#F1F5F9" }}><MaterialCommunityIcons name="fullscreen" size={24} color="#2563EB" /><View style={{ flex: 1, marginLeft: 11 }}><Text style={{ color: "#0F172A", fontWeight: "bold" }}>Display Mode</Text><Text style={{ color: "#64748B", fontSize: 11, marginTop: 3 }}>{fullscreen ? "Full Screen Mode" : "General Mode"}</Text></View><Switch value={fullscreen} onValueChange={setFullscreen} /></View><View style={{ flexDirection: "row", alignItems: "center", paddingVertical: 15 }}><MaterialCommunityIcons name="bell-outline" size={24} color="#16A34A" /><View style={{ flex: 1, marginLeft: 11 }}><Text style={{ color: "#0F172A", fontWeight: "bold" }}>Notifications</Text><Text style={{ color: "#64748B", fontSize: 11, marginTop: 3 }}>{notifications ? "চালু আছে" : "বন্ধ আছে"}</Text></View><Switch value={notifications} onValueChange={toggleNotifications} /></View><View style={{ backgroundColor: "#EFF6FF", padding: 12, borderRadius: 12 }}><Text style={{ color: "#1D4ED8", fontWeight: "bold" }}>নিরাপদ ব্যবহার</Text><Text style={{ color: "#475569", fontSize: 11, lineHeight: 17, marginTop: 4 }}>Full Screen আলাদা phone permission নয়। Notification চালু করতে system permission প্রয়োজন। Back চাপলে আগে আগের screen, Home-এ আবার চাপলে exit confirmation আসবে।</Text></View></View></View></Modal>;
+}
+
+
+/* ==================================================
+   ACRONYMS & FULL FORMS
+   Electrical ও Electronics-এর সংক্ষিপ্ত রূপের পূর্ণরূপ।
+   নতুন abbreviation যোগ করতে শুধু ACRONYMS array-তে object যোগ করুন।
+   ================================================== */
+const ACRONYMS = [
+  ["Electrical Basics", "AC", "Alternating Current", "যে current-এর দিক ও মান সময়ের সাথে পরিবর্তিত হয়।"],
+  ["Electrical Basics", "DC", "Direct Current", "যে current সাধারণত একদিকে প্রবাহিত হয়।"],
+  ["Electrical Basics", "EMF", "Electromotive Force", "কোনো source-এর charge চালানোর বৈদ্যুতিক চাপ; একক Volt।"],
+  ["Electrical Basics", "RMS", "Root Mean Square", "AC voltage বা current-এর কার্যকর মান।"],
+  ["Electrical Basics", "PF", "Power Factor", "Real power ও apparent power-এর অনুপাত।"],
+  ["Electrical Basics", "VA", "Volt-Ampere", "Apparent power-এর একক।"],
+  ["Electrical Basics", "kVA", "Kilovolt-Ampere", "1000 VA; transformer ও generator rating-এ ব্যবহৃত হয়।"],
+  ["Electrical Basics", "W", "Watt", "Real power-এর একক।"],
+  ["Electrical Basics", "kW", "Kilowatt", "1000 Watt; load ও motor power-এ ব্যবহৃত হয়।"],
+  ["Electrical Basics", "Wh", "Watt-hour", "Energy-এর একক; 1 Watt এক ঘণ্টা ব্যবহারের energy।"],
+  ["Electrical Basics", "kWh", "Kilowatt-hour", "বিদ্যুৎ বিলের সাধারণ Unit; 1 Unit = 1 kWh।"],
+  ["Electrical Basics", "Hz", "Hertz", "Frequency-এর একক; প্রতি সেকেন্ডে cycle সংখ্যা।"],
+  ["Electrical Basics", "PF", "Power Factor", "বাস্তব power কতটা কার্যকরভাবে ব্যবহৃত হচ্ছে তা বোঝায়।"],
+  ["Protection & Safety", "MCB", "Miniature Circuit Breaker", "Overcurrent বা short circuit হলে circuit trip করে।"],
+  ["Protection & Safety", "MCCB", "Molded Case Circuit Breaker", "বড় current ও industrial protection-এর breaker।"],
+  ["Protection & Safety", "RCCB", "Residual Current Circuit Breaker", "Earth leakage বা residual current detect করে।"],
+  ["Protection & Safety", "RCBO", "Residual Current Breaker with Overcurrent protection", "একসাথে leakage ও overcurrent protection দেয়।"],
+  ["Protection & Safety", "ELCB", "Earth Leakage Circuit Breaker", "Earth leakage detect করে supply disconnect করে।"],
+  ["Protection & Safety", "SPD", "Surge Protective Device", "Surge বা transient overvoltage থেকে equipment রক্ষা করে।"],
+  ["Protection & Safety", "HRC", "High Rupturing Capacity", "বেশি fault current safely interrupt করতে পারে এমন fuse type।"],
+  ["Protection & Safety", "LOTO", "Lockout/Tagout", "Maintenance-এর সময় accidental re-energization আটকানোর safety method।"],
+  ["Protection & Safety", "PPE", "Personal Protective Equipment", "Gloves, helmet, safety shoes, goggles ইত্যাদি নিরাপত্তা সরঞ্জাম।"],
+  ["Protection & Safety", "IP", "Ingress Protection", "Enclosure-এর dust ও water protection rating।"],
+  ["Protection & Safety", "NEMA", "National Electrical Manufacturers Association", "Electrical enclosure ও equipment-এর একটি standard system।"],
+  ["Wiring & Installation", "L", "Line", "Supply-এর live বা phase conductor-এর সংক্ষিপ্ত রূপ।"],
+  ["Wiring & Installation", "N", "Neutral", "AC circuit-এর neutral conductor।"],
+  ["Wiring & Installation", "PE", "Protective Earth", "Safety earthing conductor।"],
+  ["Wiring & Installation", "E", "Earth", "Fault current-এর নিরাপদ discharge path।"],
+  ["Wiring & Installation", "DB", "Distribution Board", "বিভিন্ন circuit-এ supply distribute করার board।"],
+  ["Wiring & Installation", "MDB", "Main Distribution Board", "Installation-এর প্রধান distribution board।"],
+  ["Wiring & Installation", "SMDB", "Sub-Main Distribution Board", "Main board থেকে sub-area-তে supply distribute করে।"],
+  ["Wiring & Installation", "JB", "Junction Box", "তার বা cable connection রাখার box।"],
+  ["Wiring & Installation", "TB", "Terminal Block", "Wire termination ও connection-এর insulated block।"],
+  ["Wiring & Installation", "PVC", "Polyvinyl Chloride", "Cable insulation ও conduit-এ ব্যবহৃত material।"],
+  ["Wiring & Installation", "XLPE", "Cross-Linked Polyethylene", "উচ্চ temperature সহনশীল cable insulation।"],
+  ["Wiring & Installation", "PVC", "Polyvinyl Chloride", "Cable insulation ও conduit তৈরিতে ব্যবহৃত হয়।"],
+  ["Motors & Control", "DOL", "Direct-On-Line", "Motor-কে সরাসরি line voltage-এ চালু করার starter।"],
+  ["Motors & Control", "OLR", "Overload Relay", "Motor overload হলে control circuit trip করে।"],
+  ["Motors & Control", "VFD", "Variable Frequency Drive", "Motor-এর speed ও frequency control করে।"],
+  ["Motors & Control", "VSD", "Variable Speed Drive", "Motor speed পরিবর্তনের drive system।"],
+  ["Motors & Control", "VFD", "Variable Frequency Drive", "Frequency পরিবর্তন করে AC motor speed control করে।"],
+  ["Motors & Control", "PM", "Permanent Magnet", "স্থায়ী চুম্বক; PM motor ও PM generator-এ ব্যবহৃত।"],
+  ["Motors & Control", "IM", "Induction Motor", "Electromagnetic induction principle-এ চলা motor।"],
+  ["Motors & Control", "RPM", "Revolutions Per Minute", "Motor বা shaft প্রতি মিনিটে কতবার ঘোরে।"],
+  ["Motors & Control", "CT", "Current Transformer", "বড় current measure বা protection-এর জন্য কমিয়ে দেয়।"],
+  ["Motors & Control", "PT", "Potential Transformer", "উচ্চ voltage measurement-এর জন্য কমিয়ে দেয়।"],
+  ["Motors & Control", "MCC", "Motor Control Center", "একাধিক motor control ও protection-এর panel।"],
+  ["PLC & Automation", "PLC", "Programmable Logic Controller", "Industrial machine automation controller।"],
+  ["PLC & Automation", "CPU", "Central Processing Unit", "PLC বা computer-এর processing অংশ।"],
+  ["PLC & Automation", "I/O", "Input/Output", "Controller-এর input ও output signal।"],
+  ["PLC & Automation", "DI", "Digital Input", "ON/OFF ধরনের input signal।"],
+  ["PLC & Automation", "DO", "Digital Output", "ON/OFF ধরনের output signal।"],
+  ["PLC & Automation", "AI", "Analog Input", "পরিবর্তনশীল voltage বা current input।"],
+  ["PLC & Automation", "AO", "Analog Output", "পরিবর্তনশীল control signal output।"],
+  ["PLC & Automation", "HMI", "Human Machine Interface", "Operator ও machine-এর interaction screen।"],
+  ["PLC & Automation", "SCADA", "Supervisory Control and Data Acquisition", "Industrial monitoring ও data acquisition system।"],
+  ["PLC & Automation", "PID", "Proportional Integral Derivative", "Process control-এর feedback algorithm।"],
+  ["PLC & Automation", "NC", "Normally Closed", "সাধারণ অবস্থায় closed contact।"],
+  ["PLC & Automation", "NO", "Normally Open", "সাধারণ অবস্থায় open contact; command পেলে close হতে পারে।"],
+  ["PLC & Automation", "COM", "Common", "Input বা output circuit-এর common terminal।"],
+  ["PLC & Automation", "PNP", "Positive-Negative-Positive", "সাধারণত sourcing sensor; ON হলে positive voltage দেয়।"],
+  ["PLC & Automation", "NPN", "Negative-Positive-Negative", "সাধারণত sinking sensor; ON হলে 0V-এর দিকে টানে।"],
+  ["Electronics Components", "PCB", "Printed Circuit Board", "Components বসানোর printed circuit board।"],
+  ["Electronics Components", "IC", "Integrated Circuit", "এক chip-এর ভিতরে বহু electronic circuit।"],
+  ["Electronics Components", "LED", "Light Emitting Diode", "Current প্রবাহে আলো দেয় এমন diode।"],
+  ["Electronics Components", "LCD", "Liquid Crystal Display", "Liquid crystal ব্যবহার করা display।"],
+  ["Electronics Components", "OLED", "Organic Light Emitting Diode", "Organic material ব্যবহার করা light-emitting display।"],
+  ["Electronics Components", "LDR", "Light Dependent Resistor", "আলোর ওপর resistance পরিবর্তন হয়।"],
+  ["Electronics Components", "NTC", "Negative Temperature Coefficient", "Temperature বাড়লে resistance কমে।"],
+  ["Electronics Components", "PTC", "Positive Temperature Coefficient", "Temperature বাড়লে resistance বাড়ে।"],
+  ["Electronics Components", "BJT", "Bipolar Junction Transistor", "Base, Collector ও Emitter-যুক্ত transistor।"],
+  ["Electronics Components", "FET", "Field Effect Transistor", "Electric field দিয়ে control হওয়া transistor।"],
+  ["Electronics Components", "MOSFET", "Metal Oxide Semiconductor Field Effect Transistor", "Gate voltage দিয়ে control হওয়া FET।"],
+  ["Electronics Components", "IGBT", "Insulated Gate Bipolar Transistor", "High-power switching-এর semiconductor।"],
+  ["Electronics Components", "SCR", "Silicon Controlled Rectifier", "Gate-controlled thyristor।"],
+  ["Electronics Components", "TRIAC", "Triode for Alternating Current", "AC power control-এর bidirectional device।"],
+  ["Electronics Components", "DIAC", "Diode for Alternating Current", "TRIAC triggering-এ ব্যবহৃত bidirectional device।"],
+  ["Electronics Components", "OP-AMP", "Operational Amplifier", "Voltage amplification ও signal processing-এর amplifier।"],
+  ["Electronics Components", "SMPS", "Switched-Mode Power Supply", "Switching technique-এ efficient power supply।"],
+  ["Electronics Components", "UPS", "Uninterruptible Power Supply", "বিদ্যুৎ চলে গেলে backup supply দেয়।"],
+  ["Electronics Components", "AC-DC", "Alternating Current to Direct Current", "AC supply-কে DC-তে রূপান্তর।"],
+  ["Electronics Components", "DC-DC", "Direct Current to Direct Current", "এক DC voltage level থেকে অন্য DC level-এ conversion।"],
+  ["Measurement & Testing", "DMM", "Digital Multimeter", "Voltage, current, resistance ইত্যাদি measure করা meter।"],
+  ["Measurement & Testing", "MM", "Multimeter", "বিভিন্ন electrical quantity measure করার instrument।"],
+  ["Measurement & Testing", "IR", "Insulation Resistance", "Insulation-এর resistance; সাধারণত Megger দিয়ে মাপা হয়।"],
+  ["Measurement & Testing", "ESR", "Equivalent Series Resistance", "Capacitor-এর equivalent series resistance।"],
+  ["Measurement & Testing", "CRO", "Cathode Ray Oscilloscope", "Waveform দেখার পুরনো ধরনের oscilloscope।"],
+  ["Measurement & Testing", "DSO", "Digital Storage Oscilloscope", "Digitalভাবে waveform store ও display করে।"],
+  ["Measurement & Testing", "LCR", "Inductance, Capacitance, Resistance", "এই তিন parameter measure করার meter বা measurement।"],
+  ["Measurement & Testing", "TRMS", "True Root Mean Square", "Distorted AC waveform-এর accurate RMS measurement।"],
+  ["Communication & Standards", "IEC", "International Electrotechnical Commission", "Electrical ও electronic standard তৈরির international organization।"],
+  ["Communication & Standards", "IEEE", "Institute of Electrical and Electronics Engineers", "Electrical, electronics ও technology professional organization।"],
+  ["Communication & Standards", "ISO", "International Organization for Standardization", "বিভিন্ন international standard তৈরির organization।"],
+  ["Communication & Standards", "MODBUS", "Modicon Bus", "Industrial device communication protocol।"],
+  ["Communication & Standards", "RTU", "Remote Terminal Unit", "Remote monitoring ও control-এর field device; Modbus RTU-তে ব্যবহৃত।"],
+  ["Communication & Standards", "TCP/IP", "Transmission Control Protocol / Internet Protocol", "Network communication protocol suite।"],
+  ["Communication & Standards", "RS-232", "Recommended Standard 232", "Serial communication standard।"],
+  ["Communication & Standards", "RS-485", "Recommended Standard 485", "Industrial differential serial communication standard।"],
+  ["Communication & Standards", "CAN", "Controller Area Network", "Controller ও device-এর robust communication bus।"],
+].map(([category, short, full, meaning], index) => ({ id: `${short}-${index}`, category, short, full, meaning }));
+
+const AcronymsModule = (() => {
+  function App() {
+    const [category, setCategory] = useState("সবগুলো");
+    const [query, setQuery] = useState("");
+    const categories = ["সবগুলো", ...Array.from(new Set(ACRONYMS.map((x) => x.category)))];
+    const q = query.trim().toLowerCase();
+    const list = ACRONYMS.filter((x) => (category === "সবগুলো" || x.category === category) && (!q || `${x.short} ${x.full} ${x.meaning} ${x.category}`.toLowerCase().includes(q)));
+    return <ScrollView style={{ flex: 1, backgroundColor: "#F8FAFC" }} contentContainerStyle={{ padding: 16, paddingBottom: 35 }}>
+      <View style={{ backgroundColor: "#312E81", borderRadius: 22, padding: 21, marginBottom: 15 }}><NavRow /><Text style={{ color: "#C7D2FE", fontSize: 10, fontWeight: "bold", letterSpacing: 1 }}>ELECTRICAL & ELECTRONICS</Text><Text style={{ color: "#FFFFFF", fontSize: 27, fontWeight: "bold", marginTop: 6 }}>Acronyms & Full Forms</Text><Text style={{ color: "#E0E7FF", fontSize: 13, lineHeight: 20, marginTop: 7 }}>যেমন: NO = Normally Open। সংক্ষিপ্ত রূপের পূর্ণরূপ, অর্থ ও ব্যবহার এক জায়গায়।</Text></View>
+      <View style={{ backgroundColor: "#FFFFFF", borderRadius: 13, paddingHorizontal: 13, height: 50, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 12 }}><MaterialCommunityIcons name="magnify" size={21} color="#64748B" /><TextInput value={query} onChangeText={setQuery} placeholder="NO, Normally Open বা topic খুঁজুন..." placeholderTextColor="#94A3B8" style={{ flex: 1, marginLeft: 8, color: "#0F172A" }} /></View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 13 }}>{categories.map((x) => <TouchableOpacity key={x} onPress={() => setCategory(x)} style={{ backgroundColor: category === x ? "#4338CA" : "#FFFFFF", borderRadius: 18, borderWidth: 1, borderColor: category === x ? "#4338CA" : "#CBD5E1", paddingHorizontal: 12, paddingVertical: 8, marginRight: 7 }}><Text style={{ color: category === x ? "#FFFFFF" : "#334155", fontSize: 11, fontWeight: "bold" }}>{x}</Text></TouchableOpacity>)}</ScrollView>
+      <Text style={{ color: "#0F172A", fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>পূর্ণরূপের তালিকা ({list.length})</Text>
+      {list.map((item) => <View key={item.id} style={{ backgroundColor: "#FFFFFF", borderRadius: 14, padding: 14, marginBottom: 9, borderLeftWidth: 4, borderLeftColor: "#4338CA", borderWidth: 1, borderColor: "#E0E7FF" }}><View style={{ flexDirection: "row", alignItems: "center" }}><View style={{ backgroundColor: "#EEF2FF", minWidth: 60, paddingHorizontal: 9, paddingVertical: 8, borderRadius: 10, alignItems: "center", marginRight: 11 }}><Text style={{ color: "#3730A3", fontWeight: "bold", fontSize: 17 }}>{item.short}</Text></View><View style={{ flex: 1 }}><Text style={{ color: "#111827", fontSize: 15, fontWeight: "bold" }}>{item.full}</Text><Text style={{ color: "#6366F1", fontSize: 10, marginTop: 3 }}>{item.category}</Text></View></View><Text style={{ color: "#475569", fontSize: 12, lineHeight: 19, marginTop: 10 }}>{item.meaning}</Text></View>)}
+      {!list.length && <Text style={{ color: "#64748B", textAlign: "center", marginTop: 25 }}>কোনো সংক্ষিপ্ত রূপ পাওয়া যায়নি।</Text>}
+      <View style={{ backgroundColor: "#FEF3C7", padding: 12, borderRadius: 12, marginTop: 7 }}><Text style={{ color: "#92400E", fontSize: 11, lineHeight: 17 }}>নোট: একই short form বিভিন্ন context-এ ভিন্ন অর্থ দিতে পারে। কাজের জায়গায় equipment manual, drawing ও standard দেখে নিশ্চিত হবেন।</Text></View>
+    </ScrollView>;
+  }
+  return App;
+})();
+
+
+const VISUAL_GUIDES = [
+  { id: "dol", title: "DOL Motor Starter", category: "Motor Control", icon: "engine-outline", steps: ["Supply → MCB/MCCB → Contactor main contacts → Overload relay → Motor", "Control: Phase → Stop NC → Overload NC → Start NO → Contactor coil → Neutral", "Auxiliary NO contact Start-এর parallel-এ self-holding করে।"], diagram: "L ── MCB ── Contactor ── OLR ── Motor\n              │\nControl: L ─ Stop NC ─ OLR NC ─┬─ Start NO ─┬─ Coil ─ N\n                               └─ Aux NO ──┘", warning: "Motor power ও control circuit আলাদা বুঝে wiring করুন; overload setting motor nameplate অনুযায়ী হবে।" },
+  { id: "star-delta", title: "Star-Delta Starter", category: "Motor Control", icon: "source-branch", steps: ["Start-এ Star contactor ON হয়ে starting current কমায়।", "Timer নির্দিষ্ট সময় পরে Star OFF করে Delta ON করে।", "Star ও Delta contactor-এর electrical এবং mechanical interlock থাকতে হবে।"], diagram: "Start → Main + Star ON → Timer delay\n                    ↓\n             Star OFF → Delta ON\n                    ↓\n                 Motor RUN", warning: "Star ও Delta contactor একসাথে ON হলে short circuit হতে পারে—interlock অবশ্যই রাখুন।" },
+  { id: "forward-reverse", title: "Forward-Reverse Control", category: "Motor Control", icon: "swap-horizontal", steps: ["Forward push button Forward contactor চালায়।", "Reverse push button Reverse contactor চালায়।", "দুই contactor-এর NC auxiliary contact দিয়ে interlock করুন।"], diagram: "Forward: Start F NO ── F coil ── Reverse NC\nReverse: Start R NO ── R coil ── Forward NC\nF coil ON = direction 1 | R coil ON = direction 2", warning: "Motor direction change-এর আগে stop ও safe delay দিন; দুই output একসাথে ON হতে দেবেন না।" },
+  { id: "plc-io", title: "PLC I/O Wiring", category: "PLC & Automation", icon: "cog-box", steps: ["24V DC supply-এর polarity যাচাই করুন।", "Sensor/Push button PLC input terminal-এ connect করুন।", "PLC output দিয়ে relay/contactor coil চালানোর সময় rating ও suppression যাচাই করুন।"], diagram: "+24V ─ Fuse ─ Sensor/Push Button ── PLC I0.0\n 0V  ───────────────────────────── PLC M\nPLC Q0.0 ── Relay/Contactor coil ── 0V", warning: "PLC brand অনুযায়ী PNP/NPN, common ও terminal arrangement বদলাতে পারে—manual অনুসরণ করুন।" },
+  { id: "multimeter", title: "Multimeter Measurement", category: "Testing", icon: "gauge", steps: ["Black probe COM এবং red probe সঠিক port-এ দিন।", "Voltage parallel-এ, current series বা clamp meter দিয়ে measure করুন।", "Resistance/continuity test-এর আগে power OFF ও capacitor discharge করুন।"], diagram: "Voltage:   ┌── Meter V ──┐\nSource  +─┤  Parallel   ├─−\n\nCurrent:  ── Meter A ── Load ──", warning: "Current mode-এ probe voltage source-এর দুই পাশে লাগালে short circuit হতে পারে।" },
+  { id: "earthing", title: "Earthing & Protection", category: "Safety", icon: "earth", steps: ["Equipment body protective earth conductor-এর সঙ্গে connect করুন।", "Earth leakage protection-এর জন্য RCCB/RCD ব্যবহার করুন।", "Earth continuity ও resistance qualified person দিয়ে test করুন।"], diagram: "Fault current → Equipment body → PE/Earth conductor\n                     ↓\n              RCCB / Protection → Supply OFF", warning: "Earthing shock risk কমায়, কিন্তু isolation, PPE ও lockout-এর বিকল্প নয়।" },
+  { id: "series-parallel", title: "Series & Parallel Circuit", category: "Basic Circuit", icon: "transit-connection-variant", steps: ["Series-এ current একই এবং resistance যোগ হয়।", "Parallel-এ voltage একই এবং total resistance কমে।", "Measurement করার আগে circuit topology চিহ্নিত করুন।"], diagram: "Series:    + ── R1 ── R2 ── Load ── −\nParallel:  + ──┬── R1 ──┬── −\n              └── R2 ──┘", warning: "Parallel branch-এ current rating ও fuse/protection আলাদা করে বিবেচনা করুন।" },
+  { id: "relay", title: "Relay NO/NC Contact", category: "Control Circuit", icon: "switch", steps: ["Coil energize হলে relay contact অবস্থান পরিবর্তন করে।", "NO সাধারণত open; coil ON হলে close হতে পারে।", "NC সাধারণত closed; coil ON হলে open হতে পারে।"], diagram: "Coil OFF: COM ── NC (closed) | NO (open)\nCoil ON : COM ── NC (open)   | NO (closed)", warning: "Relay contact rating-এর বেশি voltage/current চালাবেন না; inductive coil-এ suppression ব্যবহার করুন।" },
+];
+const VisualGuidesModule = (() => {
+  function App() {
+    const [guide, setGuide] = useState(null);
+    const [category, setCategory] = useState("সবগুলো");
+    const categories = ["সবগুলো", ...Array.from(new Set(VISUAL_GUIDES.map((x) => x.category)))];
+    const list = VISUAL_GUIDES.filter((x) => category === "সবগুলো" || x.category === category);
+    if (guide) return <ScrollView style={{ flex: 1, backgroundColor: "#F8FAFC" }} contentContainerStyle={{ padding: 16, paddingBottom: 35 }}><View style={{ backgroundColor: "#155E75", borderRadius: 21, padding: 20, marginBottom: 15 }}><NavRow /><View style={{ flexDirection: "row", alignItems: "center" }}><MaterialCommunityIcons name={guide.icon} size={30} color="#CFFAFE" /><Text style={{ color: "#FFFFFF", fontSize: 24, fontWeight: "bold", marginLeft: 10, flex: 1 }}>{guide.title}</Text></View><Text style={{ color: "#CFFAFE", marginTop: 8 }}>{guide.category}</Text></View><View style={{ backgroundColor: "#0F172A", borderRadius: 15, padding: 16, marginBottom: 14 }}><Text style={{ color: "#67E8F9", fontWeight: "bold", marginBottom: 10 }}>DIAGRAM</Text><Text style={{ color: "#E2E8F0", fontFamily: Platform.OS === "ios" ? "Courier" : "monospace", fontSize: 12, lineHeight: 20 }}>{guide.diagram}</Text></View><View style={{ backgroundColor: "#FFFFFF", borderRadius: 15, padding: 16, marginBottom: 14 }}><Text style={{ color: "#0F172A", fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>ধাপে ধাপে</Text>{guide.steps.map((step, i) => <View key={i} style={{ flexDirection: "row", marginBottom: 10 }}><Text style={{ color: "#0E7490", fontWeight: "bold", width: 26 }}>{i + 1}.</Text><Text style={{ color: "#334155", flex: 1, lineHeight: 20 }}>{step}</Text></View>)}</View><View style={{ backgroundColor: "#FFEDD5", borderRadius: 14, padding: 15, flexDirection: "row" }}><MaterialCommunityIcons name="shield-alert-outline" size={22} color="#C2410C" /><Text style={{ color: "#9A3412", flex: 1, marginLeft: 9, lineHeight: 19 }}>{guide.warning}</Text></View><TouchableOpacity onPress={() => setGuide(null)} style={{ backgroundColor: "#0E7490", borderRadius: 12, padding: 14, alignItems: "center", marginTop: 15 }}><Text style={{ color: "#FFFFFF", fontWeight: "bold" }}>Guide List-এ ফিরে যান</Text></TouchableOpacity></ScrollView>;
+    return <ScrollView style={{ flex: 1, backgroundColor: "#F8FAFC" }} contentContainerStyle={{ padding: 16, paddingBottom: 35 }}><View style={{ backgroundColor: "#155E75", borderRadius: 21, padding: 20, marginBottom: 15 }}><NavRow /><Text style={{ color: "#A5F3FC", fontSize: 10, fontWeight: "bold", letterSpacing: 1 }}>DIAGRAM-BASED LEARNING</Text><Text style={{ color: "#FFFFFF", fontSize: 27, fontWeight: "bold", marginTop: 5 }}>Visual Guides</Text><Text style={{ color: "#CFFAFE", lineHeight: 20, marginTop: 7 }}>Wiring, control, measurement ও safety diagram ধাপে ধাপে দেখুন।</Text></View><ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 13 }}>{categories.map((x) => <TouchableOpacity key={x} onPress={() => setCategory(x)} style={{ backgroundColor: category === x ? "#0E7490" : "#FFFFFF", borderRadius: 17, paddingHorizontal: 12, paddingVertical: 8, marginRight: 7, borderWidth: 1, borderColor: "#A5F3FC" }}><Text style={{ color: category === x ? "#FFFFFF" : "#155E75", fontSize: 11, fontWeight: "bold" }}>{x}</Text></TouchableOpacity>)}</ScrollView>{list.map((item) => <TouchableOpacity key={item.id} onPress={() => setGuide(item)} style={{ backgroundColor: "#FFFFFF", borderRadius: 15, padding: 15, marginBottom: 10, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#CFFAFE" }}><View style={{ width: 46, height: 46, borderRadius: 13, backgroundColor: "#CFFAFE", alignItems: "center", justifyContent: "center", marginRight: 11 }}><MaterialCommunityIcons name={item.icon} size={24} color="#0E7490" /></View><View style={{ flex: 1 }}><Text style={{ color: "#0F172A", fontSize: 16, fontWeight: "bold" }}>{item.title}</Text><Text style={{ color: "#64748B", fontSize: 11, marginTop: 4 }}>{item.category} • diagram ও steps</Text></View><MaterialCommunityIcons name="chevron-right" size={23} color="#0E7490" /></TouchableOpacity>)}</ScrollView>;
+  }
+  return App;
+})();
+
+
+const AboutModule = (() => {
+  function App() {
+    const [reset, setReset] = useState(false);
+    async function resetData() { await AsyncStorage.multiRemove(["electrical_saved_topics_v2", "electrical_app_settings_v1", "quiz_progress_v2"]); setReset(true); }
+    return <ScrollView style={{ flex: 1, backgroundColor: "#F8FAFC" }} contentContainerStyle={{ padding: 16, paddingBottom: 35 }}><View style={{ backgroundColor: "#334155", borderRadius: 21, padding: 21, marginBottom: 15 }}><NavRow /><MaterialCommunityIcons name="information-outline" size={37} color="#CBD5E1" /><Text style={{ color: "#FFFFFF", fontSize: 27, fontWeight: "bold", marginTop: 7 }}>About & Privacy</Text><Text style={{ color: "#E2E8F0", marginTop: 8, lineHeight: 20 }}>Electrical & Electronics বাংলা একটি educational learning app।</Text></View><View style={{ backgroundColor: "#FFFFFF", borderRadius: 15, padding: 16, marginBottom: 12 }}><Text style={{ color: "#334155", fontSize: 18, fontWeight: "bold", marginBottom: 8 }}>App-এর উদ্দেশ্য</Text><Text style={{ color: "#475569", lineHeight: 21 }}>Electrical, Electronics, PLC, calculation, safety, quiz ও job preparation সহজ বাংলায় শেখানো। Lesson, progress, saved topics এবং settings device-এর local storage-এ রাখা হয়।</Text></View><View style={{ backgroundColor: "#FEF3C7", borderRadius: 15, padding: 16, marginBottom: 12 }}><Text style={{ color: "#92400E", fontSize: 17, fontWeight: "bold", marginBottom: 7 }}>Safety Disclaimer</Text><Text style={{ color: "#78350F", lineHeight: 21 }}>এই app educational guide; live mains, panel, motor, cable size বা protection কাজের final authority নয়। বিদ্যুৎ কাজের আগে supply isolate করুন, PPE ব্যবহার করুন এবং qualified electrician ও local code অনুসরণ করুন।</Text></View><View style={{ backgroundColor: "#FFFFFF", borderRadius: 15, padding: 16, marginBottom: 12 }}><Text style={{ color: "#334155", fontSize: 17, fontWeight: "bold", marginBottom: 7 }}>Privacy</Text><Text style={{ color: "#475569", lineHeight: 21 }}>এই offline version-এ saved topics, quiz progress ও settings device-এর local storage-এ থাকে। কোনো personal information না দিলে app নিজে থেকে সংগ্রহ করে না।</Text></View><TouchableOpacity onPress={resetData} style={{ backgroundColor: "#FEE2E2", borderRadius: 12, padding: 15, flexDirection: "row", alignItems: "center", justifyContent: "center" }}><MaterialCommunityIcons name="delete-outline" size={21} color="#B91C1C" /><Text style={{ color: "#B91C1C", fontWeight: "bold", marginLeft: 8 }}>সব local data reset করুন</Text></TouchableOpacity>{reset && <Text style={{ color: "#15803D", textAlign: "center", marginTop: 11 }}>Local data reset হয়েছে।</Text>}</ScrollView>;
+  }
   return App;
 })();
 
@@ -3676,6 +3970,10 @@ const SECTION_MODULES = {
   saved: { Component: SavedTopicsModule },
   plc: { Component: PLCModule },
   job: { Component: JobPrepModule },
+  tools: { Component: ToolsModule },
+  acronyms: { Component: AcronymsModule },
+  visuals: { Component: VisualGuidesModule },
+  about: { Component: AboutModule },
 };
 
 function ModuleHost({ onBack, children }) {
@@ -3693,61 +3991,45 @@ export default function App() {
   const [fullscreen, setFullscreen] = useState(false);
   const [notifications, setNotifications] = useState(false);
 
+  useEffect(() => { AsyncStorage.getItem("electrical_app_settings_v1").then((raw) => { if (raw) { const saved = JSON.parse(raw); setFullscreen(!!saved.fullscreen); setNotifications(!!saved.notifications); } }).catch(() => {}); }, []);
+  useEffect(() => { AsyncStorage.setItem("electrical_app_settings_v1", JSON.stringify({ fullscreen, notifications })).catch(() => {}); }, [fullscreen, notifications]);
 
-// Back Button Handler
-useEffect(() => {
-  const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-    if (currentScreen !== "home") {
-      const previous = screenHistory[screenHistory.length - 1] || "home";
-      setScreenHistory((items) => items.slice(0, -1));
-      setCurrentScreen(previous);
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (currentScreen !== "home") {
+        const previous = screenHistory[screenHistory.length - 1] || "home";
+        setScreenHistory((items) => items.slice(0, -1));
+        setCurrentScreen(previous);
+        return true;
+      }
+      Alert.alert("Exit App", "Are you sure you want to exit this app?", [
+        { text: "Cancel", style: "cancel" },
+        { text: "Exit", style: "destructive", onPress: () => BackHandler.exitApp() },
+      ]);
       return true;
-    }
-    Alert.alert("App থেকে বের হবেন?", "আপনি কি সত্যিই অ্যাপ থেকে বের হতে চান?", [{ text: "না", style: "cancel" }, { text: "হ্যাঁ, বের হবো", style: "destructive", onPress: () => BackHandler.exitApp() }]);
-    return true;
-  });
-  return () => sub.remove();
-}, [currentScreen, screenHistory]);  
+    });
+    return () => sub.remove();
+  }, [currentScreen, screenHistory]);
 
-  if (currentScreen === "home") {
-    return (
-      <HomeScreen
-        onOpenSection={(sectionId) => setCurrentScreen(sectionId)}
-      />
-    );
+  function openScreen(next) {
+    if (next === currentScreen) return;
+    setScreenHistory((items) => [...items, currentScreen]);
+    setCurrentScreen(next);
   }
-
-  const entry = SECTION_MODULES[currentScreen];
-
-  if (entry) {
-    const { Component, props } = entry;
-    return (
-      <ModuleHost onBack={() => setCurrentScreen("home")}>
-        <Component key={currentScreen} {...props} />
-      </ModuleHost>
-    );
+  function goHome() { setScreenHistory([]); setCurrentScreen("home"); }
+  function toggleNotifications(value) {
+    setNotifications(value);
+    if (value) Alert.alert("Notifications", "এই Snack-compatible version-এ notification preference সংরক্ষণ করা হয়েছে। Native build-এ system notification permission যোগ করা যাবে।");
   }
 
   let page;
-  if (currentScreen === "home") {
-    page = <HomeScreen onOpenSection={setCurrentScreen} onSettings={() => setSettingsVisible(true)} />;
-  } else {
+  if (currentScreen === "home") page = <HomeScreen onOpenSection={openScreen} onSettings={() => setSettingsVisible(true)} />;
+  else {
     const entry = SECTION_MODULES[currentScreen];
     const ModuleComponent = entry && entry.Component;
-    if (entry) {
-      page = <ModuleHost onBack={() => setCurrentScreen("home")}><ModuleComponent key={currentScreen} {...(entry.props || {})} /></ModuleHost>;
-    } else {
-      page = <SectionScreen sectionId={currentScreen} onBack={() => setCurrentScreen("home")} />;
-    }
+    page = entry ? <ModuleHost onBack={goHome}><ModuleComponent key={currentScreen} {...(entry.props || {})} /></ModuleHost> : <SectionScreen sectionId={currentScreen} onBack={goHome} />;
   }
-
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: fullscreen ? "#0F172A" : "#FFFFFF" }} edges={["top"]}>
-      <StatusBar barStyle={fullscreen ? "light-content" : "dark-content"} hidden={fullscreen} backgroundColor={fullscreen ? "#0F172A" : "#FFFFFF"} />
-      <SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} fullscreen={fullscreen} setFullscreen={setFullscreen} notifications={notifications} toggleNotifications={toggleNotifications} />
-      {page}
-    </SafeAreaView>
-  );
+  return <SafeAreaView style={{ flex: 1, backgroundColor: fullscreen ? "#0F172A" : "#FFFFFF" }} edges={["top"]}><StatusBar barStyle={fullscreen ? "light-content" : "dark-content"} hidden={fullscreen} backgroundColor={fullscreen ? "#0F172A" : "#FFFFFF"} /><SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} fullscreen={fullscreen} setFullscreen={setFullscreen} notifications={notifications} toggleNotifications={toggleNotifications} />{page}</SafeAreaView>;
 }
 
 /*
@@ -3757,7 +4039,7 @@ HOME SCREEN
 ==================================================
 */
 
-function HomeScreen({ onOpenSection }) {
+function HomeScreen({ onOpenSection, onSettings }) {
   return (
     <ScrollView
       style={styles.container}
@@ -3784,10 +4066,14 @@ function HomeScreen({ onOpenSection }) {
               color="#FACC15"
             />
           </View>
+
+          <TouchableOpacity onPress={onSettings} style={{ padding: 10, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.2)" }}>
+            <MaterialCommunityIcons name="cog-outline" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
         </View>
 
         <Text style={styles.headerDescription}>
-          শিখুন, হিসাব করুন, পরীক্ষা করুন এবং Viva-এর প্রস্তুতি নিন
+          শিখুন, হিসাব করুন, পরীক্ষা করুন এবং জ্ঞান যাচাই করুন
         </Text>
       </View>
       {/* HEADER END */}
@@ -3812,56 +4098,15 @@ function HomeScreen({ onOpenSection }) {
         শেখার জন্য একটি বিষয় নির্বাচন করুন
       </Text>
 
-      {/* CALCULATOR CARD START */}
-      <TouchableOpacity
-        style={styles.calcCard}
-        onPress={() => onOpenSection("calculator")}
-        activeOpacity={0.85}
-      >
-        <View style={styles.calcIconBox}>
-          <MaterialCommunityIcons name="calculator-variant" size={28} color="#FFFFFF" />
-        </View>
-        <View style={styles.calcTextBox}>
-          <Text style={styles.calcTitle}>Calculator</Text>
-          <Text style={styles.calcSubtitle}>Ohm's Law, Power সহ দ্রুত হিসাব</Text>
-        </View>
-        <MaterialCommunityIcons name="arrow-right" size={24} color="#FFFFFF" />
+      {/* JOB PREPARATION CARD START */}
+      <TouchableOpacity style={styles.vivaCard} onPress={() => onOpenSection("job")} activeOpacity={0.85}>
+        <View style={styles.vivaIconBox}><MaterialCommunityIcons name="briefcase-account" size={30} color="#FFFFFF" /></View>
+        <View style={styles.vivaTextBox}><Text style={styles.vivaLabel}>CAREER SECTION</Text><Text style={styles.vivaTitle}>Job Preparation</Text><Text style={styles.vivaSubtitle}>CV, technical skill ও practical test-এর প্রস্তুতি নিন</Text></View>
+        <MaterialCommunityIcons name="arrow-right" size={25} color="#FFFFFF" />
       </TouchableOpacity>
-      {/* CALCULATOR CARD END */}
+      {/* JOB PREPARATION CARD END */}
 
-      {/* VIVA FEATURED CARD START */}
-      <TouchableOpacity
-        style={styles.vivaCard}
-        onPress={() => onOpenSection("viva")}
-        activeOpacity={0.85}
-      >
-        <View style={styles.vivaIconBox}>
-          <MaterialCommunityIcons
-            name="school"
-            size={30}
-            color="#FFFFFF"
-          />
-        </View>
 
-        <View style={styles.vivaTextBox}>
-          <Text style={styles.vivaLabel}>FEATURED SECTION</Text>
-
-          <Text style={styles.vivaTitle}>
-            Viva Preparation
-          </Text>
-
-          <Text style={styles.vivaSubtitle}>
-            চাকরি ও interview-এর জন্য প্রস্তুতি নিন
-          </Text>
-        </View>
-
-        <MaterialCommunityIcons
-          name="arrow-right"
-          size={25}
-          color="#FFFFFF"
-        />
-      </TouchableOpacity>
-      {/* VIVA FEATURED CARD END */}
 
       {/* MAIN SECTIONS START
       SECTION_REGISTRY-এর সব section এখানে নিজে নিজে দেখাবে।
@@ -4057,13 +4302,6 @@ function SectionScreen({ sectionId, onBack }) {
   );
 
   const specialSections = {
-    viva: {
-      title: "Viva Preparation",
-      icon: "school",
-      color: "#2563EB",
-      description:
-        "Electrical ও Electronics-এর গুরুত্বপূর্ণ Viva প্রশ্ন অনুশীলন করুন।",
-    },
     quiz: {
       title: "Random Quiz",
       icon: "help-circle-outline",
@@ -4618,11 +4856,6 @@ const styles = StyleSheet.create({
     marginLeft: 9,
   },
 
-  calcCard: { backgroundColor: "#16A34A", borderRadius: 14, padding: 13, flexDirection: "row", alignItems: "center", marginBottom: 14 },
-  calcIconBox: { width: 44, height: 44, borderRadius: 12, backgroundColor: "#22C55E", alignItems: "center", justifyContent: "center", marginRight: 10 },
-  calcTextBox: { flex: 1 },
-  calcTitle: { color: "#FFFFFF", fontSize: 16, fontWeight: "bold" },
-  calcSubtitle: { color: "#DCFCE7", fontSize: 11, marginTop: 2 },
   sectionHeading: {
     color: "#0F172A",
     fontSize: 20,
