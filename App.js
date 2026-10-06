@@ -1547,9 +1547,9 @@ const CalculationModule = (() => {
   }
 
   const CALCULATOR_OPTIONS = [
-    { id: "ohm", title: "Ohm’s Law", icon: "omega", fields: [["v", "Voltage", "V"], ["i", "Current", "A"], ["r", "Resistance", "Ω"]] },
+    { id: "ohm", title: "Ohm’s Law", icon: "alpha-o-box", fields: [["v", "Voltage", "V"], ["i", "Current", "A"], ["r", "Resistance", "Ω"]] },
     { id: "power", title: "Power", icon: "flash-outline", fields: [["v", "Voltage", "V"], ["i", "Current", "A"], ["pf", "Power Factor", "0–1"]] },
-    { id: "bill", title: "Energy Bill", icon: "cash", fields: [["w", "Load Power", "W"], ["h", "Hours/day", "h"], ["d", "Days/month", "days"], ["rate", "Rate/unit", "৳"]] },
+    { id: "bill", title: "Energy Bill", icon: "currency-usd", fields: [["w", "Load Power", "W"], ["h", "Hours/day", "h"], ["d", "Days/month", "days"], ["rate", "Rate/unit", "৳"]] },
     { id: "series", title: "Series Resistor", icon: "transit-connection-variant", fields: [["r1", "R1", "Ω"], ["r2", "R2", "Ω"], ["r3", "R3 (optional)", "Ω"]] },
     { id: "parallel", title: "Parallel Resistor", icon: "source-branch", fields: [["r1", "R1", "Ω"], ["r2", "R2", "Ω"], ["r3", "R3 (optional)", "Ω"]] },
     { id: "led", title: "LED Resistor", icon: "led-on", fields: [["vs", "Supply Voltage", "V"], ["vf", "LED Forward Voltage", "V"], ["ma", "Desired Current", "mA"]] },
