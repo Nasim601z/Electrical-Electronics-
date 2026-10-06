@@ -98,15 +98,6 @@ const SECTION_REGISTRY = [
     color: "#1E3A8A",
   },
 
-  {
-    id: "job",
-    title: "Job Preparation",
-    subtitle: "CV, technical ও practical test",
-    description:
-      "CV, interview প্রশ্ন, technical Q&A ও practical test-এর প্রস্তুতি নিন।",
-    icon: "briefcase-account",
-    color: "#BE123C",
-  },
 
   {
     id: "tools",
